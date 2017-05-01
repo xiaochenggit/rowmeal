@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #efefef">
+<head>
+	<meta charset="UTF-8">
+	<title>没有排餐日历</title>
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+	<meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+	<meta content="no-cache" http-equiv="pragma">
+	<meta content="0" http-equiv="expires">
+	<meta content="telephone=no, address=no" name="format-detection">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="stylesheet" type="text/css" href="css/font-icons.css">
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div class="warp calendar">
+		<div class="nav">
+			排餐日历
+			<a href="javascript:;" class="loginOut">退出</a>
+		</div>
+		<div class="no-calendar">
+			<p>
+				<i class="fa fa-info-circle"></i>
+				暂无进行中的排餐，请联系副群主
+			</p>
+			<p>
+				您也可以，刷新下试试！
+				<i class="fa fa-refresh" onclick="window.location.reload()"></i>
+			</p>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		$(function () {
+			if(!public.isLogoin()){
+				window.location.href = '/index.html';
+			}
+			public.getCalendar(returnUrl);
+			function returnUrl (){
+				var type = public.checkUsertype();
+				switch (type) {
+					case '2':
+						window.location.href = '/calendar.html';
+						break;
+					case '3':
+						window.location.href = '/calendar.html';
+						break;
+					default:
+						// statements_def
+						break;
+				}
+			}
+		})
+	</script>
+</body>
+</html>

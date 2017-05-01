@@ -1,0 +1,449 @@
+*{
+	box-sizing:border-box;
+}
+a{
+	text-decoration: none;
+}
+html{
+	font-size: 62.5%;
+	color: #222;
+	min-width: 100%;
+	min-height: 100%;
+}
+/*字体选中背景色*/
+::selection {
+	box-shadow: none;
+}
+ul {
+	padding: 0;
+	margin: 0;
+}
+li {
+	list-style: none;
+}
+/*工具集*/
+.center-block {
+	display: block;
+	margin-right: auto;
+	margin-left: auto;
+}
+.pull-right {
+	float: right !important;
+}
+.pull-left {
+	float: left !important;
+}
+.text-right {
+	text-align: right !important;
+}
+.text-left {
+	text-align: left !important;
+}
+.text-center {
+	text-align: center !important;
+}
+.hide {
+	display: none !important;
+}
+.show {
+	display: block !important;
+}
+.visible{
+	visibility: hidden;
+}
+.text-hide{
+	font : 0/0 ;
+	color: transparent;
+	text-shadow: none;
+	background-color: transparent;
+	border: 0;
+}
+.clearfix:before,
+.clearfix:after {
+   	content: "";
+   	display: table;
+}
+.clearfix:after {
+   	clear: both;
+}
+.clearfix2:after {
+   	clear: both;
+   	content: ' ';
+   	display: block;
+   	visibility: hidden;
+   	height: 0;
+}
+.input{
+	padding: 0px 8px;
+	display: block;
+	width: 96%;
+	max-width: 260px;
+	border:none;
+	background:none;
+	outline: none;
+	line-height: 3.6rem;
+	height: 3.6rem;
+	border : 1px solid #999;
+	border-radius: 8px;
+	margin: 0 auto 1rem;
+	color: #999;
+	font-size: 1.4rem;
+}
+.input:hover{
+	border-color: red;
+}
+.btn{
+	border: none;
+	background: #e84e40;
+	font-size: 1.4rem;
+	border: 1px solid #dd191d;
+	height: 3.6rem;
+	color: #fff;
+	text-align: center;
+	width: 96%;
+	max-width: 260px;
+	border-radius: 8px;
+	margin:0px auto 1rem;
+	display: block;
+}
+.delete{
+	background-color: #ffa726;
+	border-color: #fb8c00;
+}
+.btnreturn{
+	border-color: #f70000;
+	color: #f70000;
+	background-color: #fff;
+}
+.sure {
+	border-color: #f4511e	;
+	color: #fff;
+	background-color: #ff7043;
+}
+body{
+	min-width: 320px;
+    max-width: 640px;
+    min-height: 100%;
+	font-size: 1.2rem;
+	line-height: 1.5;
+	background-color: #fff;
+	font-family: -apple-system, "SF UI Text", "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", "WenQuanYi Zen Hei", sans-serif;
+}
+.warp{
+  width: 100%;
+  min-height: 100%;
+  margin: 0 auto;
+  overflow: hidden;
+  position: relative;
+  background: #fff;
+  padding-top: 3.6rem;
+}
+.index{
+	padding-top: 0px;
+}
+/*登录页面index*/
+.onload .logo{
+	text-align: center;
+	margin: 6rem 0 3rem;
+}
+.onload .logo img{
+	width: 96%;
+	height: auto;
+	max-width: 260px;
+}
+.onload .title{
+	text-align: center;
+	font-weight: 200;
+	margin-bottom: 4rem;
+}
+/*没有排餐日历 no-calendar*/
+.calendar {
+	background-color: #efefef;
+}
+.nav{
+	background-color: #fff;
+	font-size: 1.6rem;
+	line-height: 3.6rem;
+	text-align: center;
+	position: fixed;
+	width: 100%;
+	top: 0px;
+	border-bottom: 1px solid #bbb;
+	z-index: 10;
+}
+.nav .loginOut{
+	position: absolute;
+	right: 1rem;
+	font-size: 1.4rem;
+	color: #000;
+}
+.no-calendar{
+	font-size: 1.6rem;
+	text-align: center;
+	line-height: 2.5rem;
+	border-top: 1px solid #bbb;
+}
+.no-calendar i{
+	font-size: 2rem;
+	margin:0 1rem;
+}
+/*排餐报名*/
+.signup .hr{
+	height: 1rem;
+	background-color: #F0F0F2;
+	border-bottom: 1px solid #bbb;
+	border-top: 1px solid #bbb;
+}
+.food-body{
+	background-color: #fff;
+}
+.food-body div.food{
+	padding: 1rem 0px 5rem 0px;
+}
+.food-list{
+	width: 80%;
+	min-width: 260px;
+	margin: 0 auto;
+}
+.food-list label>span{
+	display: inline-block;
+	width: 8rem;
+	font-size:1.6rem;
+	line-height: 3.6rem;
+	float: left;
+	text-align: center;	
+}
+.food-list label .input{
+	float: left;
+	width: calc(100% - 8rem);
+	max-width: 600px;
+}
+.input-group input{
+	outline: none;
+	height: 3.4rem;
+	border: none;
+	position: absolute;
+	z-index: 1;
+}
+.input-group{
+	position: relative;
+}
+.input-group input.name{
+	width: calc(100% - 16px - 5rem)
+}
+.input-group input.price{
+	right: 8px;
+	width: 5rem;
+	text-align: right;
+}
+.input-group .foodlist{
+	left: -1px ;
+	padding: 0 8px;
+	position: absolute;
+	top: calc(3.4rem - 8px);
+	width: calc(100% + 2px);
+	border: 1px solid #999;
+	background-color: #fff;
+	line-height: 2.5rem;
+	z-index: 2;
+	display: none;
+	max-height: 15rem;
+	overflow-x:hidden;
+}
+.input-group .foodlist .foodPrice{
+	float: right;
+}
+.signup .btn-group{
+	padding: 2rem 0;
+	background-color: #F0F0F2;
+	border-top: 1px solid #bbb;
+}
+.signup .btn-group .btn{
+	min-width: 260px;
+	max-width: 600px;
+	width: 80%;
+}
+.food-type > p{
+	font-size: 2rem;
+	text-align: center;
+	margin: 1rem 0px;
+}
+/*二厨排菜*/
+.twolineup div.food{
+	padding-bottom: 0px;
+}
+.twolineup .food-list {
+	position: relative;
+}
+.twolineup .food-list i{
+	font-size: 2rem;
+	position: absolute;
+	right: -2rem;
+	line-height: 3.6rem;
+}
+/*排菜信息*/
+.detailed .food-type{
+	padding-top: 1rem;
+}
+.detailed .food-type .food-box{
+	border: none;
+	padding: 0px;
+}
+.detailed .food-type .food-box .input{
+	width: calc(50% - 0.5rem);
+	float: left;
+	color: #000;
+}
+.detailed .food-type .food-box .input:first-child{
+	margin-right: 1rem;
+}
+/*设置排餐日历 set-calendar*/
+.set-cal .nav {
+	background-color: #F8F8F8;
+}
+.no-calendar span{
+	display: block;
+	padding: 1rem 0 2rem;
+	background-color: #F0F0F2;
+	border-bottom: 1px solid #ddd;
+}
+.calendar{
+	background-color: #fff;
+	border: none;
+	font-size: 2rem;
+	width: 98%;
+	margin:0 auto;
+	float: none;
+}
+.cal-container{
+	margin:0;
+	width: 100%;
+}
+.calendar dl,
+.calendar dd{
+	width: 100%;
+}
+.calendar dt{
+	width: calc(100% / 7);
+	margin: 0px;
+	font-size: 1.6rem;
+	line-height:2.8rem;
+	border-bottom: 1px solid red;
+}
+.calendar dt strong {
+	font-weight: normal;
+}
+.calendar dd a{
+	width: calc(100% / 7);
+	margin: 0px;
+	font-size: 1.6rem;
+	line-height:2.8rem;
+	height: auto;
+	font-weight: normal;
+}
+.calendar dt.date{
+	line-height: 3.6rem;
+	font-size: 2rem;
+	font-weight: normal;
+}
+.set-cal .btn-group{
+	margin:1rem 0;
+}
+.set-cal .btn-group.cal-btn-group {
+	margin:0px;
+	padding: 4rem 0;
+}
+/*排餐日历 calendar*/
+.cal .title{
+	text-align: center;
+	font-size: 1.6rem;
+	line-height: 2rem;
+	padding: 1rem 0px;
+	border-bottom: 1px solid #bbb;
+}
+.cal .shop{
+	width: 6rem;
+	float: left;
+	text-align: center;
+	font-size: 1.6rem;
+}
+.cal .shop li{
+	line-height: 4rem;
+	color: #fff;
+}
+.cal .shop li:nth-child(4n+1){
+	background-color: #259B24;
+}
+.cal .shop li:nth-child(4n+2){
+	background-color: #F77205;
+}
+.cal .shop li:nth-child(4n+3){
+	background-color: #F00CC6;
+}
+.cal .shop li:nth-child(4n){
+	background-color: #3B8DF7;
+}
+.cal .shop li + li {
+	border-top : 1px dashed #000;
+}
+.cal .shop h2{
+	font-weight: normal;
+	margin: 0px;
+	line-height: 5rem;
+	border-bottom: 1px solid red;
+}
+.cal .weeks{
+	float: left;
+	width: calc(100% - 6rem);
+	overflow-y:hidden;
+}
+.cal .weeks  p{
+	margin: 0px;
+	line-height: 2rem;
+}
+.cal .weeks li>p{
+	float: left;
+	width: 20%;
+}
+.cal .weeks li p span {
+	display: block;
+	text-align: center;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+.cal .weeks li + li{
+	border-top: 1px #000 dashed;
+	border-left: 1px #000 dashed;
+}
+.cal .weeks li + li p{
+	background-color: #E7E8E6;
+	line-height: 1.6rem;
+	padding: 0.4rem 0px;
+}
+.cal .weeks li + li p[status='0']{
+	background-color: red;
+	color: #fff;
+}
+.cal .weeks li + li p[status='2']{
+	background-color: #5f5f14;
+	color: #fff;
+}
+.cal .weeks li + li p.active{
+	background-color: #C3ED80;
+}
+.cal .weeks li:nth-child(2){
+	border-top: none;
+}
+.cal .weeklist{
+	border-left: 1px solid red;
+	border-bottom: 1px solid red;
+}
+.cal .weeklist p {
+	font-size: 1.6rem;
+	line-height: 2rem;
+	padding: 0.5rem 0px;
+}
+.cal .weeks li p+p{
+	border-left: 1px #000 dashed;
+}

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en" style="background-color: #efefef">
+<head>
+	<meta charset="UTF-8">
+	<title>报名</title>
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+	<meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+	<meta content="no-cache" http-equiv="pragma">
+	<meta content="0" http-equiv="expires">
+	<meta content="telephone=no, address=no" name="format-detection">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div class="warp signup">
+		<div class="nav">排餐报名</div>
+		<div class="hr"></div>
+		<div class="food-body clearfix">
+			<form>
+			<div class="food">
+				<div class="food-list clearfix">
+					<label>
+						<span>店铺</span>
+						<select class="input" id ="shopName" disabled>
+							<option value=""></option>
+						</select>
+					</label>
+				</div>
+				<div class="food-list clearfix">
+					<label>
+						<span>日期</span>
+						<input type="text" class="input" value="" id="canData">
+					</label>
+				</div>
+				<div class="food-list clearfix">
+					<label>
+						<span>厨师</span>
+						<select class="input" id ="name">
+							
+						</select>
+					</label>
+				</div>
+				<div class="food-list clearfix">
+					<label>
+						<span>电话</span>
+						<input type="text" class="input" value="" id="mobile">
+					</label>
+				</div>
+				<div class="food-list clearfix" id="culture">
+					<label>
+						<span>文化餐主菜</span>
+						<div class="input input-group" data-id='' id="BIZ_MAIN">
+							<input type="text" value="" class="name" placeholder="菜名">
+							<input type="text" value="" class="price" placeholder="价格" />
+							<ul class="foodlist">
+								<!-- <li>
+									<span class="foodName">酸菜鱼</span>
+									<span class="foodPrice">10.9元</span>
+								</li>
+								<li>
+									<span class="foodName">酸汤肥牛</span>
+									<span class="foodPrice">8.9元</span>
+								</li>
+								<li>
+									<span class="foodName">酸辣粉</span>
+									<span class="foodPrice">12.1元</span>
+								</li> -->
+							</ul>
+						</div>
+					</label>
+				</div>
+				<div class="food-list clearfix" id="work" >
+					<label>
+						<span>工作餐主菜</span>
+						<div class="input input-group" id="JOB_MAIN" data-id=''>
+							<input type="text" value="" class="name" placeholder="菜名">
+							<input type="text" value="" class="price" placeholder="价格" />
+							<ul class="foodlist">
+								
+							</ul>
+						</div>
+					</label>
+				</div>
+				</div>
+				<div class="btn-group">
+					<button class="btn" id="oneBtn">报名</button>
+					<button class="btn delete" id="deleteBtn">删除</button>
+					<button class="btn noBtn" id="noBtn">不排餐</button>
+					<button class="btn btnreturn" id="reBtn">返回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		window.onload = function (){
+			public.markerLineup();
+		}
+	</script>
+</body>
+</html>

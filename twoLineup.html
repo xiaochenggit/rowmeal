@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>二厨排菜</title>
+	<meta name="Keywords" content="">
+	<meta name="Description" content="">
+	<meta content="text/html; charset=UTF-8" http-equiv="Content-Type">
+	<meta content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" name="viewport">
+	<meta content="no-cache,must-revalidate" http-equiv="Cache-Control">
+	<meta content="no-cache" http-equiv="pragma">
+	<meta content="0" http-equiv="expires">
+	<meta content="telephone=no, address=no" name="format-detection">
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<link rel="stylesheet" type="text/css" href="css/font-icons.css">
+	<link rel="stylesheet" href="css/normalize.css">
+	<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+	<div class="warp signup twolineup">
+		<div class="nav">二厨排菜</div>
+		<div class="hr"></div>
+		<div class="food-body clearfix">
+			<form>
+			<div class="food">
+				<div class="food-list clearfix">
+					<label>
+						<span>店铺</span>
+						<select class="input" id="shopName" disabled>
+							<option></option>
+						</select>
+					</label>
+				</div>
+				<div class="food-list clearfix">
+					<label>
+						<span>日期</span>
+						<input type="text" class="input" disabled id="canData">
+					</label>
+				</div>
+				<div class="hr"></div>
+				<div class="food-type">
+					<p>文化餐</p>
+					<div class="food-list clearfix">
+						<label>
+							<span>文化餐主菜</span>
+							<input type="text" class="input" disabled id="BIZ_MAIN">
+						</label>
+					</div>
+					<div class="food-list clearfix">
+						<label>
+							<span>配菜</span>
+							<select class="input biz">
+									
+							</select>
+						</label>
+						<i class="fa fa-plus"></i>
+					</div>
+				</div>
+				<div class="hr"></div>
+				<div class="food-type">
+					<p>工作餐</p>
+					<div class="food-list clearfix">
+						<label>
+							<span>工作餐主菜</span>
+							<input type="text" class="input" disabled id="JOB_MAIN">
+						</label>
+					</div>
+					<div class="food-list clearfix">
+						<label>
+							<span>配菜</span>
+							<select class="input job">
+									
+							</select>
+						</label>
+						<i class="fa fa-plus"></i>
+					</div>
+				</div>
+				</div>
+				<div class="btn-group">
+					<button class="btn" id="sure">确认排菜</button>
+					<button class="btn btnreturn">返回</button>
+				</div>
+			</form>
+		</div>
+	</div>
+	<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
+	<script type="text/javascript" src="js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		window.onload = function (){
+			public.twoLineup();
+		}
+	</script>
+</body>
+</html>

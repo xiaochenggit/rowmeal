@@ -15,18 +15,6 @@ $(function(){
 	// 二厨排菜
 
 	// 添加配菜 删除配菜
-	$(document).on('click','.food-list',function(event){
-		var $parent = $(this).parent();
-		var target = $(event.target);
-		if (target.hasClass('fa-plus')) {
-			target.parent().parent().append('<div class="food-list clearfix">'+target.parent().html()+"</div>");
-			return false;
-		} else if (target.hasClass('fa-minus')){
-			target.parent().remove();
-		} else {
-			return false;
-		}
-	})
 	// 二厨排菜完
 	// 退出按钮点击
 	$(".loginOut").click(function(event) {
@@ -486,26 +474,64 @@ var public = {
 		$("#canData").val(this.getUrlParam(url,'date'));
 		// 文化餐主菜
 		if (this.getUrlParam(url,'item')!='undefined') {
-			var item = JSON.parse(this.getUrlParam(url,'item'));
+			var item = this.getUrlParam(url,'item');
 			$("#BIZ_MAIN").val(item.biz.main.name);
 			$("#JOB_MAIN").val(item.job.main.name);
 			$("#sure").click(function(event) {
 			  event.preventDefault();
 			  public.checkTwo();
 		    });
-		    $(document).on('click','.JOB_SIDE',function (event){
-		    	console.log($(this));
-		    	var target = event.target;
-		    	console.log(target);
-				// public.getjob_side(name,function(data){
-				// 	HTMLWork(data,$this);
-				// });
+		    $(".JOB_SIDE").bind('keyup',function(){
+		    	var $this = $(this);
+		    	var name = $this.find('.name').val();
+		    	$this.find("ul").remove();
+		    	public.getjob_side(name,function(data){
+					HTMLWork(data,$this);
+				});
 		    })
-		    function HTMLCulture(data){
+		    $(".BIZ_SIDE").bind('keyup',function(){
+		    	var $this = $(this);
+		    	var name = $this.find('.name').val();
+		    	$this.find("ul").remove();
+		    	public.getbiz_side(name,function(data){
+					HTMLCulture(data,$this);
+				});
+		    })
+		    $(document).on('click','.food-list',function(event){
+				var $parent = $(this).parent();
+				var target = $(event.target);
+				if (target.hasClass('fa-plus')) {
+					target.parent().parent().append('<div class="food-list clearfix">'+target.parent().html()+"</div>");
+					$(".JOB_SIDE").unbind('keyup');
+					$(".JOB_SIDE").bind('keyup',function(){
+				    	var $this = $(this);
+				    	var name = $this.find('.name').val();
+				    	$(".JOB_SIDE").find("ul").remove();
+				    	public.getjob_side(name,function(data){
+							HTMLWork(data,$this);
+						});
+			    	})
+			    	$(".BIZ_SIDE").unbind('keyup');
+			    	$(".BIZ_SIDE").bind('keyup',function(){
+				    	var $this = $(this);
+				    	var name = $this.find('.name').val();
+				    	$(".BIZ_SIDE").find("ul").remove();
+				    	public.getbiz_side(name,function(data){
+							HTMLCulture(data,$this);
+						});
+				    })
+			    	$("#JOB .fa-plus:gt(0)").removeClass('fa-plus').addClass('fa-minus');
+			    	$("#DIZ .fa-plus:gt(0)").removeClass('fa-plus').addClass('fa-minus');
+					return false;
+				} else if (target.hasClass('fa-minus')){
+					target.parent().remove();
+				} else {
+					return false;
+				}
+			})
+		    function HTMLCulture(data,thist){
 				var data = data.rt;
 				if (data.length > 0) {
-					console.log(data);
-					var BIZ_MAIN = $('#BIZ_MAIN');
 					var liHTML = '<ul class="foodlist">';
 					data.forEach( function(item, index) {
 						liHTML += '<li data-id='+item.id+'>';
@@ -514,7 +540,7 @@ var public = {
 						liHTML += '<li>';
 					});
 					liHTML += '</ul>';
-					BIZ_MAIN.append(liHTML);
+					thist.append(liHTML);
 					shua();
 				};
 			}
@@ -621,8 +647,8 @@ var public = {
 		var id = this.getUrlParam(url,'dataId');
 		var mc = this.getUrlParam(url,'code');
 		var date = this.getUrlParam(url,'date');
-		var $biz = $(".biz :selected");
-		var $job = $(".job :selected");
+		var $biz = $(".BIZ_SIDE .name");
+		var $job = $(".JOB_SIDE .name");
 		var dish = [];
 		$biz.each(function(index, el) {
 			var obj = {
@@ -645,7 +671,7 @@ var public = {
 		var dish = JSON.stringify(dish);
 		var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish ;
 		this.setSide(url,function(data){
-			console.log(data);
+			window.history.go(-1);
 		})
 	},
 	// 验证菜单是否填齐全 
@@ -1179,6 +1205,14 @@ var public = {
 	getUserCookie : function (){
 		var user = JSON.parse($.cookie(this.cookieUserName))
 		return user;
+	},
+	setItemCookie : function (item) {
+		var value = JSON.stringify(item);
+		$.cookie('rowmealItem', value, { expires: 1 });
+	},
+	getItemCookie : function (item) {
+		var item = JSON.parse($.cookie('rowmealItem'))
+		return item;
 	},
 	deleteUserCookie : function () {
 		$.cookie(this.cookieUserName, null);

@@ -26,36 +26,34 @@
 					<div class="food-list clearfix">
 						<label>
 							<span>店铺</span>
-							<select class="input">
-								<option value="">远东店</option>
-								<option value="">临空店</option>
-								<option value="">天洁店</option>
+							<select class="input" id="shopName" disabled>
+								<option value=""></option>
 							</select>
 						</label>
 					</div>
 					<div class="food-list clearfix">
 						<label>
 							<span>日期</span>
-							<input type="text" class="input" value="2017-5-1"></label>
+							<input type="text" class="input" id="canData" disabled></label>
 					</div>
 					<div class="food-list clearfix">
 						<label>
 							<span>厨师</span>
-							<input type="text" class="input" value="方文正"></label>
+							<input type="text" class="input" id="name" disabled></label>
 					</div>
 					<div class="food-list clearfix">
 						<label>
 							<span>电话</span>
-							<input type="text" class="input" value="18112365555"></label>
+							<input type="text" class="input" id="mobile" disabled></label>
 					</div>
 					<div class="hr"></div>
-					<div class="food-type">
-						<div class="food-list clearfix">
+					<div class="food-type" id="BIZ">
+						<div class="food-list clearfix" >
 							<label>
 								<span>文化餐</span>
 								<div class="input food-box">
-									<input class="input" type="text" placeholder="份数"/>
-									<input class="input" type="text" placeholder="价格"/>
+									<input class="input" type="number" placeholder="份数" id="ba" />
+									<input class="input" type="number" placeholder="价格"id="bp"/>
 								</div>
 							</label>
 							<i class="fa fa-plus"></i>
@@ -63,57 +61,33 @@
 						<div class="food-list clearfix">
 							<label>
 								<span>主菜</span>
-								<input type="text" class="input" value="酸汤肥牛">
+								<input type="text" class="input" disabled id="BIZ_MAIN">
 							</label>
-							<i class="fa fa-plus"></i>
-						</div>
-						<div class="food-list clearfix">
-							<label>
-								<span>配菜</span>
-								<input type="text" class="input" value="酸汤肥牛">
-							</label>
-							<i class="fa fa-plus"></i>
-						</div>
-						<div class="food-list clearfix">
-							<label>
-								<span>配菜</span>
-								<input type="text" class="input" value="酸汤肥牛">
-							</label>
-							<i class="fa fa-plus"></i>
 						</div>
 					</div>
 					<div class="hr"></div>
-					<div class="food-type">
+					<div class="food-type" id="JOB">
 						<div class="food-list clearfix">
 							<label>
-								<span>文化餐</span>
+								<span>工作餐</span>
 								<div class="input food-box">
-									<input class="input" type="text" placeholder="份数"/>
-									<input class="input" type="text" placeholder="价格"/>
+									<input class="input" type="text" placeholder="份数" id="ja" />
+									<input class="input" type="text" placeholder="价格" id="jp" />
 								</div>
 							</label>
-							<i class="fa fa-plus"></i>
 						</div>
 						<div class="food-list clearfix">
 							<label>
 								<span>主菜</span>
-								<input type="text" class="input" value="酸汤肥牛">
+								<input type="text" class="input" disabled id="JOB_MAIN">
 							</label>
-							<i class="fa fa-plus"></i>
-						</div>
-						<div class="food-list clearfix">
-							<label>
-								<span>配菜</span>
-								<input type="text" class="input" value="酸汤肥牛">
-							</label>
-							<i class="fa fa-plus"></i>
 						</div>
 					</div>
 				</div>
 				<div class="btn-group">
-					<button class="btn sure">确认</button>
-					<button class="btn">删除</button>
-					<button class="btn btnreturn">返回</button>
+					<button class="btn sure" id="sure">确认</button>
+					<button class="btn" id="delete">删除</button>
+					<button class="btn btnreturn" id="reBtn">返回</button>
 				</div>
 			</form>
 		</div>
@@ -121,5 +95,10 @@
 	<script type="text/javascript" src="js/jquery-2.1.4.min.js"></script>
 	<script type="text/javascript" src="js/jquery.cookie.js"></script>
 	<script type="text/javascript" src="js/main.js"></script>
+	<script type="text/javascript">
+		window.onload = function (){
+			public.detailed();
+		}
+	</script>
 </body>
 </html>

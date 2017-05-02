@@ -246,7 +246,6 @@ body{
 	background-color: #fff;
 	line-height: 2.5rem;
 	z-index: 2;
-	display: none;
 	max-height: 15rem;
 	overflow-x:hidden;
 }
@@ -417,16 +416,24 @@ body{
 	border-left: 1px #000 dashed;
 }
 .cal .weeks li + li p{
-	background-color: #E7E8E6;
+	background-color: #f0ad4e;
 	line-height: 1.6rem;
 	padding: 0.4rem 0px;
 }
 .cal .weeks li + li p[status='0']{
-	background-color: red;
+	background-color: #d9534f;
 	color: #fff;
 }
 .cal .weeks li + li p[status='2']{
-	background-color: #5f5f14;
+	background-color: #5bc0de;
+	color: #fff;
+}
+.cal .weeks li + li p[status='3']{
+	background-color: #5cb85c;
+	color: #fff;
+}
+.cal .weeks li + li p[status='4']{
+	background-color: #337ab7;
 	color: #fff;
 }
 .cal .weeks li + li p.active{

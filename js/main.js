@@ -33,7 +33,6 @@ $(function(){
 		console.log('1');
 		public.logout();
 	});
-	console.log(public.getUserCookie());
 	// 登录
 	$("#loadform").submit(function(event) {
 		event.preventDefault();
@@ -57,9 +56,10 @@ $(function(){
    				withCredentials :true
    			},  
 	       success : function(result){ 
-	       	console.log(result);
 	       		if (result.code == 200) {
 	       			public.returnUser();
+	       		} else{
+	       			alert('账号或密码错误!请重新填写')
 	       		}
 	       },  
 	       error : function(msg) {  
@@ -79,7 +79,8 @@ var public = {
 	// 用户信息
 	accountInfo : 'api/accountInfo',
 	// 获取排餐日历 
-	calendar : 'api/schedule', 
+	calendar : 'api/schedule',
+	schedulecreate : 'api/scheduleCreate', 
 	// 退出登录
 	doLogout : 'api/doLogout',
 	// 创建排餐日历
@@ -92,10 +93,19 @@ var public = {
 	JOB_MAIN : 'api/dishList&type=JOB_MAIN&keyword=&limit=',
 	// 工作餐配菜
 	JOB_SIDE : 'api/dishList&type=JOB_SIDE&keyword=&limit=',
+	// 筛选文化餐主菜
+	getBIZ_MAIN : 'api/dishList&type=BIZ_MAIN&keyword=',
+	// 筛选工作餐主菜
+	getJOB_MAIN	: 'api/dishList&type=JOB_MAIN&keyword=',
+	// 筛选文化餐配菜
+	getBIZ_SIDE : 'api/dishList&type=BIZ_SIDE&keyword=',
+	// 筛选工作餐配菜
+	getJOB_SIDE	: 'api/dishList&type=JOB_SIDE&keyword=',
 	// 设置主菜
 	setmain : 'api/setMain',
 	// 设置配菜
 	setside: 'api/setSide',
+	setconfirm: 'api/setConfirm',
 	// 删除主菜
 	unsetmain : 'api/unsetMain',
 	// 群主获得大厨信息
@@ -104,27 +114,15 @@ var public = {
 	setdisable: 'api/setDisable',
 	// 允许排餐
 	setenable : 'api/setEnable',
-
 	// user cookie 储存名字
 	cookieUserName : 'rowmeal',
 	// 排餐开启时间
 	startDay : '',
 	// 排餐结束时间
 	endDay : '',
-	getDay : function (value){
-	    var NewArray = new Array("周日","周一","周二","周三","周四","周五","周六");
-	    KingVal = value;
-	    DateYear = parseInt(KingVal.split("-")[0]);
-	    DateMonth = parseInt(KingVal.split("-")[1]);
-	    DateDay = parseInt(KingVal.split("-")[2]);
-	    var NewDate = new Date(DateYear,DateMonth-1,DateDay);
-	    var NewWeek = NewDate.getDay();
-	    return (NewArray[NewWeek]);
-    },
 	// calendar 页面 根据返回数据渲染页面
 	setcalendarHTML : function (data){
-		// var data = { "code": 200, "msg": "", "rt": { "id": 0, "start": "2017-04-01", "end": "2017-04-02", "data": [ { "merchant": { "code": "BEJYD", "name": "远东店" }, "items": [ { "date": "2017-04-01", "dish": null, "status": 0 }, { "date": "2017-04-02", "dish": {}, "status": 1 } ] }, { "merchant": { "code": "BEJLK", "name": "临空店" }, "items": [ { "date": "2017-04-01", "dish": { "biz": { "main": { "id": 1, "name": "菜名", "cost": 1500, "chef": { "mobile": "13912345670", "name": "张三" } } } }, "status": 2 }, { "date": "2017-04-02", "dish": { "biz": { "main": { "id": 2, "name": "菜名", "cost": 1800, "chef": { "mobile": "13912345671", "name": "李四" } }, "side": [ { "id": 20, "name": "菜名" }, { "id": 21, "name": "菜名" } ] }, "job": { "main": { "id": 3, "name": "菜名", "cost": 1600, "chef": { "mobile": "13912345671", "name": "李四" } }, "side": [ { "id": 30, "name": "菜名" } ] } }, "status": 3 } ] } ] } };
-		console.log(data);
+	    console.log(data);
 		var data = data.rt;
 		var cal = $('#cal');
 		var title = '<div class="title">' + data.start + '~' + data.end + '</div>';
@@ -196,25 +194,35 @@ var public = {
 			var $this = $(this);
 			var status = $this.attr("status");
 			if (status == 0 && public.checkUsertype() != 1) {
-				alert('暂未开启排餐');
+				alert($this.attr("date") + '当天不排餐');
 				return false;
 			}
+			if (status == 1 && public.checkUsertype() == 3) {
+				alert('大厨暂未设置主菜');
+				return false;
+			}
+			if (status == 4 && public.checkUsertype() > 1) {
+				alert('排餐已经确认');
+				return false;
+			};
 			var date = $this.attr("date");
 			var dataId = $this.attr("data-id");
 			var code = $this.attr("code");
 			var codeName = $this.attr("codeName");
 			var item = $this.attr('item');
-			console.log(date + '-' + dataId + '-' + code);
-			if (public.checkUsertype() == 1) {
-				window.location.href = '/masterLineup.html?' + 'status=' + status
+			var reUrl = 'status=' + status
 				+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName + '&item=' + item;
+			if (status == 3 && public.checkUsertype() == 1) {
+				window.location.href = '/detailed.html?' + reUrl;
+				return false;
+			};
+			if (public.checkUsertype() == 1) {
+				window.location.href = '/masterLineup.html?' + reUrl;
 			}
 			else if (public.checkUsertype() == 2) {
-				window.location.href = '/oneLineup.html?' + 'status=' + status
-				+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName + '&item=' + item;
+				window.location.href = '/oneLineup.html?' + reUrl;
 			} else {
-				window.location.href = '/twoLineup.html?' +'status=' + status
-				+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName + '&item=' + item;
+				window.location.href = '/twoLineup.html?' + reUrl;
 			}
 		});
 		// 排餐日历 伸缩窗口
@@ -252,12 +260,21 @@ var public = {
 			$("#BIZ_MAIN .price").val(item.biz.main.cost/100 + '元');
 			$("#JOB_MAIN .name").val(item.biz.main.name);
 			$("#JOB_MAIN .price").val(item.biz.main.cost/100 + '元');
+			$("#oneBtn").remove();
 		}
 		if (this.checkUsertype() == 1) {
 			var user = this.getUserCookie();
 			public.chefList(HTMLcherf);
-			this.getCulture(HTMLCulture);
-			this.getWork(HTMLWork);
+			$('#BIZ_MAIN').on('keyup click',function (){
+				var name = $(this).find('.name').val();
+				$('#BIZ_MAIN ul').remove();
+				public.getbiz_main(name,HTMLCulture);
+			})
+			$('#JOB_MAIN').on('keyup click',function (){
+				var name = $(this).find('.name').val();
+				$('#JOB_MAIN ul').remove();
+				public.getjob_main(name,HTMLWork);
+			})
 			// 点击报名
 			$("#oneBtn").click(function (event){
 				event.preventDefault();
@@ -266,7 +283,9 @@ var public = {
 			// 删除
 			$("#deleteBtn").click(function(event) {
 				event.preventDefault()
-				public.checkUnsetmain();
+				public.checkUnsetmain(function(){
+					window.history.go(-1);
+				});
 			});
 			// 返回
 			$("#reBtn").click(function(event) {
@@ -277,6 +296,8 @@ var public = {
 			var status = this.getUrlParam(url,'status');
 			if (status==0) {
 				$("#noBtn").removeClass('noBtn').html('排餐');
+				$("#oneBtn").remove();
+				$("#deleteBtn").remove();
 			}
 			$("#noBtn").click(function(event) {
 				event.preventDefault();
@@ -308,46 +329,40 @@ var public = {
 				$("#name").trigger('click');
 			}
 			function HTMLCulture(data){
-				var ul = $('#culture ul');
-				var liHTML = '';
-				var ArrayData = data.rt;
-				ArrayData.forEach( function(item, index) {
-					liHTML += '<li data-id='+item.id+'>';
-					liHTML += 	'<span class="foodName">'+item.name+'</span>';
-					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
-					liHTML += '<li>';
-				});
-				ul.append(liHTML);
-				shua();
+				var data = data.rt;
+				if (data.length > 0) {
+					console.log(data);
+					var BIZ_MAIN = $('#BIZ_MAIN');
+					var liHTML = '<ul class="foodlist">';
+					data.forEach( function(item, index) {
+						liHTML += '<li data-id='+item.id+'>';
+						liHTML += 	'<span class="foodName">'+item.name+'</span>';
+						liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+						liHTML += '<li>';
+					});
+					liHTML += '</ul>';
+					BIZ_MAIN.append(liHTML);
+					shua();
+				};
 			}
 			function HTMLWork(data){
-				var ul = $('#work ul');
-				var liHTML = '';
-				var ArrayData = data.rt;
-				ArrayData.forEach( function(item, index) {
-					liHTML += '<li data-id='+item.id+'>';
-					liHTML += 	'<span class="foodName">'+item.name+'</span>';
-					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
-					liHTML += '<li>';
-				});
-				ul.append(liHTML);
-				// 输入菜名 更新列表
-				shua();
+				var data = data.rt;
+				if (data.length > 0) {
+					console.log(data);
+					var JOB_MAIN = $('#JOB_MAIN');
+					var liHTML = '<ul class="foodlist">';
+					data.forEach( function(item, index) {
+						liHTML += '<li data-id='+item.id+'>';
+						liHTML += 	'<span class="foodName">'+item.name+'</span>';
+						liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+						liHTML += '<li>';
+					});
+					liHTML += '</ul>';
+					JOB_MAIN.append(liHTML);
+					shua();
+				};
 			}
-			function shua(){
-				$('.input-group .name').keyup(function() {
-						var $this = $(this);
-						var $li = $(this).siblings('.foodlist').find("li");
-						var reg = new RegExp($this.val())
-						$li.each(function(index,el) {
-							if (!reg.test($(this).find('.foodName').text())) {
-								$(this).hide();
-							} else {
-								$(this).show();
-							}
-						});
-				});
-				// 点击列表 , 更新菜名和价格
+			function shua() {
 				$(".input-group .foodlist li").each(function(index, el) {
 					$(el).click(function(event){
 						$this = $(this);
@@ -375,7 +390,6 @@ var public = {
 		// 如果有数据
 		if (this.getUrlParam(url,'item') != 'undefined') {
 			var item = JSON.parse(this.getUrlParam(url,'item'));
-			console.log(item);
 			if (item.biz) {
 				$("#name").val(item.biz.main.chef.name);
 				$("#mobile").val(item.biz.main.chef.mobile);
@@ -383,7 +397,6 @@ var public = {
 				$("#BIZ_MAIN .price").val(item.biz.main.cost/100 + '元');
 			} 
 			if (item.job) {
-				console.log(item.job);
 				$("#name").val(item.job.main.chef.name);
 				$("#mobile").val(item.job.main.chef.mobile);
 				$("#JOB_MAIN .name").val(item.job.main.name);
@@ -392,8 +405,16 @@ var public = {
 			
 		}
 		if (this.checkUsertype() == 2) {
-			this.getCulture(HTMLCulture);
-			this.getWork(HTMLWork);
+			$('#BIZ_MAIN').on('keyup click',function (){
+				var name = $(this).find('.name').val();
+				$('#BIZ_MAIN ul').remove();
+				public.getbiz_main(name,HTMLCulture);
+			})
+			$('#JOB_MAIN').on('keyup click',function (){
+				var name = $(this).find('.name').val();
+				$('#JOB_MAIN ul').remove();
+				public.getjob_main(name,HTMLWork);
+			})
 			// 点击报名
 			$("#oneBtn").click(function (event){
 				event.preventDefault();
@@ -408,46 +429,40 @@ var public = {
 				window.history.go(-1);
 			});
 			function HTMLCulture(data){
-				var ul = $('#culture ul');
-				var liHTML = '';
-				var ArrayData = data.rt;
-				ArrayData.forEach( function(item, index) {
-					liHTML += '<li data-id='+item.id+'>';
-					liHTML += 	'<span class="foodName">'+item.name+'</span>';
-					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
-					liHTML += '<li>';
-				});
-				ul.append(liHTML);
-				shua()
+				var data = data.rt;
+				if (data.length > 0) {
+					console.log(data);
+					var BIZ_MAIN = $('#BIZ_MAIN');
+					var liHTML = '<ul class="foodlist">';
+					data.forEach( function(item, index) {
+						liHTML += '<li data-id='+item.id+'>';
+						liHTML += 	'<span class="foodName">'+item.name+'</span>';
+						liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+						liHTML += '<li>';
+					});
+					liHTML += '</ul>';
+					BIZ_MAIN.append(liHTML);
+					shua();
+				};
 			}
 			function HTMLWork(data){
-				var ul = $('#work ul');
-				var liHTML = '';
-				var ArrayData = data.rt;
-				ArrayData.forEach( function(item, index) {
-					liHTML += '<li data-id='+item.id+'>';
-					liHTML += 	'<span class="foodName">'+item.name+'</span>';
-					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
-					liHTML += '<li>';
-				});
-				ul.append(liHTML);
-				shua()
+				var data = data.rt;
+				if (data.length > 0) {
+					console.log(data);
+					var JOB_MAIN = $('#JOB_MAIN');
+					var liHTML = '<ul class="foodlist">';
+					data.forEach( function(item, index) {
+						liHTML += '<li data-id='+item.id+'>';
+						liHTML += 	'<span class="foodName">'+item.name+'</span>';
+						liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+						liHTML += '<li>';
+					});
+					liHTML += '</ul>';
+					JOB_MAIN.append(liHTML);
+					shua();
+				};
 			}
 			function shua() {
-				// 输入菜名 更新列表
-				$('.input-group .name').keyup(function() {
-						var $this = $(this);
-						var $li = $(this).siblings('.foodlist').find("li");
-						var reg = new RegExp($this.val())
-						$li.each(function(index,el) {
-							if (!reg.test($(this).find('.foodName').text())) {
-								$(this).hide();
-							} else {
-								$(this).show();
-							}
-						});
-				});
-				// 点击列表 , 更新菜名和价格
 				$(".input-group .foodlist li").each(function(index, el) {
 					$(el).click(function(event){
 						$this = $(this);
@@ -474,28 +489,130 @@ var public = {
 			var item = JSON.parse(this.getUrlParam(url,'item'));
 			$("#BIZ_MAIN").val(item.biz.main.name);
 			$("#JOB_MAIN").val(item.job.main.name);
-			public.getBizSide(HTMLBiz);
-			function HTMLBiz(data){
-				var data = data.rt;
-				data.forEach( function(item, index) {
-					$(".biz").append('<option value='+item.cost+' data-id=' + item.id +'>'+item.name+'</option>')
-				});
-			}
-			public.getJobSide(HTMLJob);
-			function HTMLJob(data){
-				var data = data.rt;
-				data.forEach( function(item, index) {
-					$(".job").append('<option value='+item.cost+' data-id=' + item.id +'>'+item.name+'</option>')
-				});
-			}
 			$("#sure").click(function(event) {
 			  event.preventDefault();
 			  public.checkTwo();
 		    });
+		    $(document).on('click','.JOB_SIDE',function (event){
+		    	console.log($(this));
+		    	var target = event.target;
+		    	console.log(target);
+				// public.getjob_side(name,function(data){
+				// 	HTMLWork(data,$this);
+				// });
+		    })
+		    function HTMLCulture(data){
+				var data = data.rt;
+				if (data.length > 0) {
+					console.log(data);
+					var BIZ_MAIN = $('#BIZ_MAIN');
+					var liHTML = '<ul class="foodlist">';
+					data.forEach( function(item, index) {
+						liHTML += '<li data-id='+item.id+'>';
+						liHTML += 	'<span class="foodName">'+item.name+'</span>';
+						liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+						liHTML += '<li>';
+					});
+					liHTML += '</ul>';
+					BIZ_MAIN.append(liHTML);
+					shua();
+				};
+			}
+			function HTMLWork(data,thist){
+				var data = data.rt;
+				if (data.length > 0) {
+					// var JOB_MAIN = $('#JOB_MAIN');
+					var liHTML = '<ul class="foodlist">';
+					data.forEach( function(item, index) {
+						liHTML += '<li data-id='+item.id+'>';
+						liHTML += 	'<span class="foodName">'+item.name+'</span>';
+						liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+						liHTML += '<li>';
+					});
+					liHTML += '</ul>';
+					thist.append(liHTML);
+					shua();
+				};
+			}
+			function shua() {
+				$(".input-group .foodlist li").each(function(index, el) {
+					$(el).click(function(event){
+						$this = $(this);
+						$parent = $this.parent();
+						$parent.parent().attr('data-id',$this.attr('data-id'));
+						$parent.siblings('.name').val($this.find('.foodName').text());
+						$parent.siblings('.price').val($this.find('.foodPrice').text());
+						$parent.hide();
+						return false;
+					})
+				});
+			}
 		}
 		$(".btnreturn").click(function(event) {
 			event.preventDefault();
 			window.history.go(-1);
+		})
+	},
+	// 群主的排餐信息页面
+	detailed : function (){
+		var url = window.location;
+		// 店名
+		$('#shopName option').html(this.getUrlParam(url,'codeName'));
+		// 日期
+		$("#canData").val(this.getUrlParam(url,'date'));
+		var item = JSON.parse(this.getUrlParam(url,'item'));
+		console.log(item);
+		$("#name").val(item.biz.main.chef.name);
+		$("#mobile").val(item.biz.main.chef.mobile);
+		$("#BIZ_MAIN").val(item.biz.main.name)
+		var BIZ_SIDE = '';
+		item.biz.side.forEach( function(item, index) {
+			BIZ_SIDE += '<div class="food-list clearfix">';
+			BIZ_SIDE +=    '<label>';
+			BIZ_SIDE +=       '<span>配菜</span>';
+			BIZ_SIDE +=       '<input type="text" class="input" value='+item.name+' disabled>';
+			BIZ_SIDE +=    '</label>';
+			BIZ_SIDE += '</div>';
+		});
+		$("#BIZ").append(BIZ_SIDE);
+		var jOB_SIDE = '';
+		item.job.side.forEach( function(item, index) {
+			jOB_SIDE += '<div class="food-list clearfix">';
+			jOB_SIDE +=    '<label>';
+			jOB_SIDE +=       '<span>配菜</span>';
+			jOB_SIDE +=       '<input type="text" class="input" value='+item.name+' disabled>';
+			jOB_SIDE +=    '</label>';
+			jOB_SIDE += '</div>';
+		});
+		$("#JOB").append(jOB_SIDE);
+		$("#JOB_MAIN").val(item.job.main.name);
+		$("#reBtn").click(function (event){
+			event.preventDefault();
+			window.history.go(-1);
+		});
+		$("#delete").click(function (event){
+			event.preventDefault();
+			public.checkUnsetmain();
+		});
+		$("#sure").click(function (event){
+			event.preventDefault();
+			var url = window.location;
+			var id = public.getUrlParam(url,'dataId');
+			var mc = public.getUrlParam(url,'code');
+			var date = public.getUrlParam(url,'date');
+			var ba = Math.floor($("#ba").val());
+			var bp = parseFloat($("#bp").val()).toFixed(2);
+			var ja = Math.floor($("#ja").val());
+			var jp = parseFloat($("#jp").val()).toFixed(2);
+			if (!ba || !bp || !ja || !jp) {
+				alert('分数价格要填完整');
+				return false;
+			}
+			var getUrl = '&id=' + id + '&mc=' + mc + '&date=' + date + '&ba=' + ba + 
+			'&bp=' + bp + '&ja=' + ja + '&jp=' + jp;
+			public.setConfirm(getUrl,function(data){
+				console.log(data);
+			})
 		})
 	},
 	// 二厨验证 配菜
@@ -516,9 +633,6 @@ var public = {
 			}
 			dish.push(obj);
 		});
-		var dish = JSON.stringify(dish);
-		var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish ;
-		var jobdish = [];
 		$job.each(function(index, el) {
 			var obj = {
 				type : 'job',
@@ -526,15 +640,12 @@ var public = {
 				name : $(this).text(),
 				cost : $(this).val()
 			}
-			jobdish.push(obj);
+			dish.push(obj);
 		});
-		var jobdish = JSON.stringify(jobdish);
-		var joburl = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + jobdish ;
+		var dish = JSON.stringify(dish);
+		var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish ;
 		this.setSide(url,function(data){
 			console.log(data);
-			public.setSide(joburl,function(data){
-				console.log(data);
-			})
 		})
 	},
 	// 验证菜单是否填齐全 
@@ -603,9 +714,30 @@ var public = {
 			dish = JSON.stringify(dish);
 			var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish + '&chef=' + chef;
 			public.setMain(url,function (){
-				// window.history.go(-1);
+				window.history.go(-1);
 			});
 		}
+	},
+	// 群主确认排餐信息 
+	setConfirm : function (url,callback) {
+		$.ajax({
+			url: this.url + this.setconfirm + url,
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
+					
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
 	},
 	// 设置配菜
 	setSide : function (url,callback){
@@ -656,7 +788,9 @@ var public = {
 		var mc = this.getUrlParam(url,'code');
 		var date = this.getUrlParam(url,'date');
 		var url = '&id=' + id + '&mc=' + mc + '&date=' + date;
-		this.unSetmain(url);
+		this.unSetmain(url,function(){
+			window.history.go(-1);
+		});
 	},
 	// 删除主菜
 	unSetmain : function (url,callback) {
@@ -823,6 +957,27 @@ var public = {
 			})
 		}
 	},
+	// 确认排餐信息
+	scheduleCreate : function (url,callback){
+		$.ajax({
+			url: this.url + this.schedulecreate + url,
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
+					
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
+	},
 	// 获取排餐日历
 	getCalendar : function (callback,callback2){
 		var that = this;
@@ -835,6 +990,90 @@ var public = {
 	       	},  
 			success: function (data){
 				if (data.rt == null) {
+					callback2 && callback2();
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
+	},
+	// 获取工作餐配菜
+	getjob_side : function (url,callback){
+		$.ajax({
+			url: this.url + this.getJOB_SIDE + url + '&limit=',
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
+					callback2 && callback2();
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
+	},
+	// 获取文化餐配菜
+	getbiz_side : function (url,callback){
+		$.ajax({
+			url: this.url + this.getBIZ_SIDE + url + '&limit=',
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
+					callback2 && callback2();
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
+	},
+	// 获取工作餐主菜
+	getjob_main : function (url,callback){
+		$.ajax({
+			url: this.url + this.getJOB_MAIN + url + '&limit=',
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
+					callback2 && callback2();
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
+	},
+	// 获取文化餐主菜
+	getbiz_main : function (url,callback){
+		$.ajax({
+			url: this.url + this.getBIZ_MAIN + url + '&limit=',
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
 					callback2 && callback2();
 				} else {
 					callback && callback(data)
@@ -1002,6 +1241,17 @@ var public = {
             }
         }
         return items;
+    },
+    // 返回 217-05-02 是星期几
+	getDay : function (value){
+	    var NewArray = new Array("周日","周一","周二","周三","周四","周五","周六");
+	    KingVal = value;
+	    DateYear = parseInt(KingVal.split("-")[0]);
+	    DateMonth = parseInt(KingVal.split("-")[1]);
+	    DateDay = parseInt(KingVal.split("-")[2]);
+	    var NewDate = new Date(DateYear,DateMonth-1,DateDay);
+	    var NewWeek = NewDate.getDay();
+	    return (NewArray[NewWeek]);
     },
     isEmptyObject : function (e) {
 		var t;

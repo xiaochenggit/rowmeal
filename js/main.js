@@ -2,12 +2,12 @@ $(function(){
 	// ---大厨的排餐报名
 	// 点击其他区域隐藏列表
 	$("body").click(function(event) {
-		$(".input-group .foodlist").hide();
+		$(".input-group .foodlist").remove();
 	});
 	// 点击区域显示列表
 	$(".input-group").click(function(event){
-		$(".input-group .foodlist").hide();
-		$(this).find('.foodlist').show();
+		$(".input-group .foodlist").remove();
+		$(this).find('.foodlist').remove();
 		event.stopPropagation();
 	});
 	// ---大厨的排餐报名（完）
@@ -18,7 +18,6 @@ $(function(){
 	// 二厨排菜完
 	// 退出按钮点击
 	$(".loginOut").click(function(event) {
-		console.log('1');
 		public.logout();
 	});
 	// 登录
@@ -93,6 +92,8 @@ var public = {
 	setmain : 'api/setMain',
 	// 设置配菜
 	setside: 'api/setSide',
+	// 日历确认
+	scheduleconfirm :'r=api/scheduleConfirm&id=',
 	setconfirm: 'api/setConfirm',
 	// 删除主菜
 	unsetmain : 'api/unsetMain',
@@ -109,12 +110,10 @@ var public = {
 	// 排餐结束时间
 	endDay : '',
 	// calendar 页面 根据返回数据渲染页面
-	setcalendarHTML : function (data){
-	    console.log(data);
-		var data = data.rt;
+	setcalendarHTML : function (DATA){
+		var data = DATA.rt;
 		var cal = $('#cal');
 		var title = '<div class="title">' + data.start + '~' + data.end + '</div>';
-		
 		var Arraydata = data.data;
 		var bodyHTML = '';
 		bodyHTML += '<div class="body clearfix">';
@@ -139,22 +138,20 @@ var public = {
 		Arraydata.forEach( function(item, index) {
 			bodyHTML += 		'<li class="clearfix">';
 			item.items.forEach( function(element, index) {
-				
 				// 没有排餐 根据权限显示不同内容
 				if (!public.isEmptyObject(element.dish)) {
-						var dish = JSON.stringify(element.dish);
-						bodyHTML += 		'<p class="reAdd" status='+element.status+' item='+dish+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
+						bodyHTML += 		'<p class="reAdd" status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
 						bodyHTML +=         	'<span>'+element.dish.biz.main.chef.name+'</span>';
 						bodyHTML +=         	'<span>'+element.dish.biz.main.name+'</span>'
 						bodyHTML += 		'</p>';
 				} else {
 					if(public.checkUsertype() == 1) {
-						bodyHTML += 		'<p class="reAdd" status='+element.status+' item='+dish+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
+						bodyHTML += 		'<p class="reAdd" status='+element.status+'  date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
 						bodyHTML +=         	'<span>'+'暂无'+'</span>';
 						bodyHTML +=         	'<span>'+'报名'+'</span>'
 						bodyHTML += 		'</p>';
 					} else {
-						bodyHTML += 		'<p class="reAdd " status='+element.status+' item='+dish+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
+						bodyHTML += 		'<p class="reAdd " status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
 						bodyHTML +=         	'<span>'+'点击'+'</span>';
 						bodyHTML +=         	'<span>'+'报名'+'</span>'
 						bodyHTML += 		'</p>';
@@ -175,7 +172,7 @@ var public = {
 		}
 		// 确认排餐按钮点击事件
 		$("#sureCal").click(function (){
-			public.sureCal();
+			public.sureCal(DATA.rt.id);
 		})
 		// 点击排餐
 		$(".reAdd").click(function(event) {
@@ -197,21 +194,29 @@ var public = {
 			var dataId = $this.attr("data-id");
 			var code = $this.attr("code");
 			var codeName = $this.attr("codeName");
-			var item = $this.attr('item');
-			var reUrl = 'status=' + status
-				+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName + '&item=' + item;
-			if (status == 3 && public.checkUsertype() == 1) {
-				window.location.href = '/detailed.html?' + reUrl;
-				return false;
-			};
-			if (public.checkUsertype() == 1) {
-				window.location.href = '/masterLineup.html?' + reUrl;
-			}
-			else if (public.checkUsertype() == 2) {
-				window.location.href = '/oneLineup.html?' + reUrl;
-			} else {
-				window.location.href = '/twoLineup.html?' + reUrl;
-			}
+			DATA.rt.data.forEach( function(item, index) {
+				if (item.merchant.code == code) {
+					item.items.forEach( function(element, index) {
+						if (element.date == date) {
+							public.setItemCookie(element.dish);
+							var reUrl = 'status=' + status
+								+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName;
+							if (status == 3 && public.checkUsertype() == 1) {
+								window.location.href = '/detailed.html?' + reUrl;
+								return false;
+							};
+							if (public.checkUsertype() == 1) {
+								window.location.href = '/masterLineup.html?' + reUrl;
+							}
+							else if (public.checkUsertype() == 2) {
+								window.location.href = '/oneLineup.html?' + reUrl;
+							} else {
+								window.location.href = '/twoLineup.html?' + reUrl;
+							}
+						}
+					});
+				}
+			});
 		});
 		// 排餐日历 伸缩窗口
 		function getWidth (){
@@ -225,13 +230,23 @@ var public = {
 			getWidth();
 		}
 	},
-	sureCal: function (){
-		var message = window.confirm('是否确认排餐');
-		if (message) {
-			console.log('确认排餐成功');
-		} else {
-			console.log('取消排餐成功');
-		}
+	sureCal: function (id){
+		$(".reAdd").each(function(index, el) {
+			var status = $(el).attr("status")
+			if (status != 0 || status != 4) {
+				alert('排餐信息不完整!');
+				return false;
+			} else {
+				var message = window.confirm('是否确认排餐?');
+				if (message) {
+					public.scheduleConfirm(id,function(){
+						window.history.go(-1);
+					})
+				} else {
+			
+				}
+			}
+		});
 	},
 	// 群主的排餐页面
 	markerLineup : function (){
@@ -241,14 +256,13 @@ var public = {
 		// 日期
 		$("#canData").val(this.getUrlParam(url,'date'));
 		// 如果有数据
-		if (this.getUrlParam(url,'item') != 'undefined') {
-			var item = JSON.parse(this.getUrlParam(url,'item'));
+		if (public.getItemCookie()) {
+			var item = public.getItemCookie();
 			$("#name").append('<option value='+item.biz.main.chef.mobile+' >'+item.biz.main.chef.name+'</option>');
 			$("#BIZ_MAIN .name").val(item.biz.main.name);
 			$("#BIZ_MAIN .price").val(item.biz.main.cost/100 + '元');
 			$("#JOB_MAIN .name").val(item.biz.main.name);
 			$("#JOB_MAIN .price").val(item.biz.main.cost/100 + '元');
-			$("#oneBtn").remove();
 		}
 		if (this.checkUsertype() == 1) {
 			var user = this.getUserCookie();
@@ -319,7 +333,6 @@ var public = {
 			function HTMLCulture(data){
 				var data = data.rt;
 				if (data.length > 0) {
-					console.log(data);
 					var BIZ_MAIN = $('#BIZ_MAIN');
 					var liHTML = '<ul class="foodlist">';
 					data.forEach( function(item, index) {
@@ -336,7 +349,6 @@ var public = {
 			function HTMLWork(data){
 				var data = data.rt;
 				if (data.length > 0) {
-					console.log(data);
 					var JOB_MAIN = $('#JOB_MAIN');
 					var liHTML = '<ul class="foodlist">';
 					data.forEach( function(item, index) {
@@ -376,8 +388,8 @@ var public = {
 		$('#name').val(user.name);
 		$('#mobile').val(user.mobile);
 		// 如果有数据
-		if (this.getUrlParam(url,'item') != 'undefined') {
-			var item = JSON.parse(this.getUrlParam(url,'item'));
+		if (public.getItemCookie()) {
+			var item = public.getItemCookie();
 			if (item.biz) {
 				$("#name").val(item.biz.main.chef.name);
 				$("#mobile").val(item.biz.main.chef.mobile);
@@ -419,7 +431,6 @@ var public = {
 			function HTMLCulture(data){
 				var data = data.rt;
 				if (data.length > 0) {
-					console.log(data);
 					var BIZ_MAIN = $('#BIZ_MAIN');
 					var liHTML = '<ul class="foodlist">';
 					data.forEach( function(item, index) {
@@ -436,7 +447,6 @@ var public = {
 			function HTMLWork(data){
 				var data = data.rt;
 				if (data.length > 0) {
-					console.log(data);
 					var JOB_MAIN = $('#JOB_MAIN');
 					var liHTML = '<ul class="foodlist">';
 					data.forEach( function(item, index) {
@@ -473,10 +483,32 @@ var public = {
 		// 日期
 		$("#canData").val(this.getUrlParam(url,'date'));
 		// 文化餐主菜
-		if (this.getUrlParam(url,'item')!='undefined') {
-			var item = this.getUrlParam(url,'item');
+		if (public.getItemCookie() != 'undefined') {
+			var item = public.getItemCookie();
 			$("#BIZ_MAIN").val(item.biz.main.name);
 			$("#JOB_MAIN").val(item.job.main.name);
+			if (item.biz.side) {
+				item.biz.side.forEach( function(element, index) {
+					if (index==0) {
+						$(".BIZ_SIDE .name").val(element.name);
+						$(".BIZ_SIDE .name").attr('data-id',element.id);
+						$(".BIZ_SIDE .price").val(element.cost + '元');
+					} else {
+						$("#DIZ").append('<div class="food-list clearfix"><label><span>配菜</span><div class="input input-group BIZ_SIDE" data-id=""><input type="text" value='+element.name+' class="name"  data-id='+element.id+'><input type="text"  value='+element.cost+"元"+' class="price" ></div></label><i class="fa fa-minus"></i></div>')
+					}
+				});
+			}
+			if (item.job.side) {
+				item.job.side.forEach( function(element, index) {
+					if (index==0) {
+						$(".JOB_SIDE .name").val(element.name);
+						$(".JOB_SIDE .name").attr('data-id',element.id);
+						$(".JOB_SIDE .price").val(element.cost + '元');
+					} else {
+						$("#JOB").append('<div class="food-list clearfix"><label><span>配菜</span><div class="input input-group BIZ_SIDE" data-id=""><input type="text" value='+element.name+' class="name"  data-id='+element.id+'><input type="text"  value='+element.cost+"元"+' class="price" ></div></label><i class="fa fa-minus"></i></div>')
+					}
+				});
+			}
 			$("#sure").click(function(event) {
 			  event.preventDefault();
 			  public.checkTwo();
@@ -532,6 +564,7 @@ var public = {
 		    function HTMLCulture(data,thist){
 				var data = data.rt;
 				if (data.length > 0) {
+					thist.find('ul').remove();
 					var liHTML = '<ul class="foodlist">';
 					data.forEach( function(item, index) {
 						liHTML += '<li data-id='+item.id+'>';
@@ -565,10 +598,10 @@ var public = {
 					$(el).click(function(event){
 						$this = $(this);
 						$parent = $this.parent();
-						$parent.parent().attr('data-id',$this.attr('data-id'));
+						$parent.siblings('.name').attr('data-id',$this.attr('data-id'));
 						$parent.siblings('.name').val($this.find('.foodName').text());
 						$parent.siblings('.price').val($this.find('.foodPrice').text());
-						$parent.hide();
+						$parent.remove();
 						return false;
 					})
 				});
@@ -586,11 +619,10 @@ var public = {
 		$('#shopName option').html(this.getUrlParam(url,'codeName'));
 		// 日期
 		$("#canData").val(this.getUrlParam(url,'date'));
-		var item = JSON.parse(this.getUrlParam(url,'item'));
-		console.log(item);
+		var item = public.getItemCookie();
 		$("#name").val(item.biz.main.chef.name);
 		$("#mobile").val(item.biz.main.chef.mobile);
-		$("#BIZ_MAIN").val(item.biz.main.name)
+		$("#BIZ_MAIN").val(item.biz.main.name);
 		var BIZ_SIDE = '';
 		item.biz.side.forEach( function(item, index) {
 			BIZ_SIDE += '<div class="food-list clearfix">';
@@ -631,13 +663,13 @@ var public = {
 			var ja = Math.floor($("#ja").val());
 			var jp = parseFloat($("#jp").val()).toFixed(2);
 			if (!ba || !bp || !ja || !jp) {
-				alert('分数价格要填完整');
+				alert('份数价格要填完整');
 				return false;
 			}
 			var getUrl = '&id=' + id + '&mc=' + mc + '&date=' + date + '&ba=' + ba + 
 			'&bp=' + bp + '&ja=' + ja + '&jp=' + jp;
 			public.setConfirm(getUrl,function(data){
-				console.log(data);
+				window.history.go(-1);
 			})
 		})
 	},
@@ -654,8 +686,8 @@ var public = {
 			var obj = {
 				type : 'biz',
 				id : $(this).attr('data-id'),
-				name : $(this).text(),
-				cost : $(this).val()
+				name : $(this).val(),
+				cost : parseInt($(this).siblings('.price').val())
 			}
 			dish.push(obj);
 		});
@@ -663,11 +695,14 @@ var public = {
 			var obj = {
 				type : 'job',
 				id : $(this).attr('data-id'),
-				name : $(this).text(),
-				cost : $(this).val()
+				name : $(this).val(),
+				cost : parseInt($(this).siblings('.price').val())
 			}
 			dish.push(obj);
 		});
+		if (dish.length <= 1) {
+			alert('请把配菜信息填写完整');
+		}
 		var dish = JSON.stringify(dish);
 		var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish ;
 		this.setSide(url,function(data){
@@ -949,8 +984,6 @@ var public = {
 	       },  
 	       success : function(result){ 
 	   		  if (result.code == 200) {
-	   		  	console.log('获得账号信息成功');
-				console.log(result.rt);
 				that.setUserCookie(result.rt);
 				that.indexGo();
 	   		  }
@@ -974,8 +1007,7 @@ var public = {
 	       			withCredentials:true
 	       		},
 	       		success : function (data){
-	       			console.log(data);
-	       			// window.location.href = '/signup.html';
+	       			 window.location.href = '/calendar.html';
 	       		},
 	       		error : function (msg){
 					console.log(msg)
@@ -1016,6 +1048,27 @@ var public = {
 	       	},  
 			success: function (data){
 				if (data.rt == null) {
+					callback2 && callback2();
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
+	},
+	// 日历确认
+	scheduleConfirm : function (id,callback){
+		$.ajax({
+			url: this.url + this.scheduleconfirm + id,
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
 					callback2 && callback2();
 				} else {
 					callback && callback(data)

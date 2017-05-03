@@ -119,22 +119,22 @@ var public = {
 		});
 		bodyHTML +=				'</li>';
 		Arraydata.forEach( function(item, index) {
-			bodyHTML += 		'<li class="clearfix drag">';
+			bodyHTML += 		'<li class="clearfix">';
 			item.items.forEach( function(element, index) {
 				// 没有排餐 根据权限显示不同内容
 				if (!public.isEmptyObject(element.dish)) {
-						bodyHTML += 		'<p class="reAdd" dr_replace='+1+' dr_drag ='+1+' status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
+						bodyHTML += 		'<p class="reAdd" status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
 						bodyHTML +=         	'<span>'+element.dish.biz.main.chef.name+'</span>';
 						bodyHTML +=         	'<span>'+element.dish.biz.main.name+'</span>'
 						bodyHTML += 		'</p>';
 				} else {
 					if(public.checkUsertype() == 1) {
-						bodyHTML += 		'<p class="reAdd" dr_replace='+1+' dr_drag ='+1+' status='+element.status+'  date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
+						bodyHTML += 		'<p class="reAdd" status='+element.status+'  date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
 						bodyHTML +=         	'<span>'+'暂无'+'</span>';
 						bodyHTML +=         	'<span>'+'报名'+'</span>'
 						bodyHTML += 		'</p>';
 					} else {
-						bodyHTML += 		'<p class="reAdd " dr_replace='+1+' dr_drag ='+1+' status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
+						bodyHTML += 		'<p class="reAdd " status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
 						bodyHTML +=         	'<span>'+'点击'+'</span>';
 						bodyHTML +=         	'<span>'+'报名'+'</span>'
 						bodyHTML += 		'</p>';
@@ -221,6 +221,48 @@ var public = {
 		getWidth();
 		window.onresize = function (){
 			getWidth();
+		}
+		var removeP;
+		var remove;
+		var removeEnd;
+		var reAdd = document.getElementsByClassName("reAdd");
+		for (var i = 0 ; i < reAdd.length ;i ++) {
+			reAdd[i].addEventListener("touchstart",function(event){
+				remove = $(this);
+				removeP = $(this).clone(true).css({
+					position: 'fixed',
+					opacity : 0.6
+				})
+				$(this).parent().append(removeP);
+				removeP.css({
+					left : event.touches[0].clientX + 10 + 'px',
+					top : event.touches[0].clientY + 10 + 'px',
+					border : '1px solid #ccc'
+				})
+				$("#week ul").css('overflow','hidden');
+			},false)
+			reAdd[i].addEventListener("touchmove",function (event){
+				removeP.css({
+					left : event.touches[0].clientX + 10 + 'px',
+					top : event.touches[0].clientY + 10 + 'px'
+				})
+			},false)
+			reAdd[i].addEventListener("touchend",function (event){
+					removeP.remove()
+					var x = event.changedTouches[0].clientX;
+					var y = event.changedTouches[0].clientY;
+					var width = $(".reAdd").outerWidth();
+					var height = $(".reAdd").outerHeight();
+					$(".reAdd").each(function (index,el){
+						var elx = $(el).offset().left;
+						var ely = $(el).offset().top;
+						if ( x > elx && x < elx + width && y>ely && y< ely + height) {
+							removeEnd = $(el);
+							return ;
+						};
+					});
+					console.log(removeEnd);
+			},false)
 		}
 	},
 	sureCal: function (id){

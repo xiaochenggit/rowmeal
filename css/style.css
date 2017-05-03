@@ -478,13 +478,6 @@ body{
 	50% {right: 16px;}
 	100% {right: 10px;}
 }
-/* jQuery Gridly
- * Copyright 2013 Kevin Sylvestre
- * 1.2.3
- */
-.gridly, .gridly > :not(.dragging) {
-  -webkit-transition: all 0.4s ease-in-out;
-  -moz-transition: all 0.4s ease-in-out;
-  transition: all 0.4s ease-in-out; }
-.gridly .dragging {
-  z-index: 800; }
+#week ul {
+	position: relative;
+}

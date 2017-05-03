@@ -88,6 +88,16 @@ li {
 	margin: 0 auto 1rem;
 	color: #999;
 	font-size: 1.4rem;
+	color: #000;
+}
+.input .input{
+	color: #000;
+}
+.input:disabled{
+	color: #ccc;
+}
+.input .input.enabled{
+	border-color: #000;
 }
 .input:hover{
 	border-color: red;
@@ -447,10 +457,34 @@ body{
 	border-bottom: 1px solid red;
 }
 .cal .weeklist p {
+	position: relative;
 	font-size: 1.6rem;
 	line-height: 2rem;
 	padding: 0.5rem 0px;
 }
+.cal .weeklist p .fa{
+	position: absolute;
+	right: 10px;
+	top: 50%;
+	-ms-transform:translateY(-50%);
+	transform:translateY(-50%);
+	animation:remove 1s linear infinite;
+}
 .cal .weeks li p+p{
 	border-left: 1px #000 dashed;
 }
+@keyframes remove{
+	0 {right: 10px;}
+	50% {right: 16px;}
+	100% {right: 10px;}
+}
+/* jQuery Gridly
+ * Copyright 2013 Kevin Sylvestre
+ * 1.2.3
+ */
+.gridly, .gridly > :not(.dragging) {
+  -webkit-transition: all 0.4s ease-in-out;
+  -moz-transition: all 0.4s ease-in-out;
+  transition: all 0.4s ease-in-out; }
+.gridly .dragging {
+  z-index: 800; }

@@ -463,12 +463,12 @@ body{
 	padding: 0.5rem 0px;
 }
 .cal .weeklist p .fa{
-	position: absolute;
+	position: fixed;
 	right: 10px;
-	top: 50%;
+	top: 11rem;
 	-ms-transform:translateY(-50%);
 	transform:translateY(-50%);
-	animation:remove 1s linear infinite;
+	animation:remove 1s linear 10;
 }
 .cal .weeks li p+p{
 	border-left: 1px #000 dashed;

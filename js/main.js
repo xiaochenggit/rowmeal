@@ -77,6 +77,8 @@ var public = {
 	// 日历确认
 	scheduleconfirm :'r=api/scheduleConfirm&id=',
 	setconfirm: 'api/setConfirm',
+	// 数据交换
+	setswitch :'api/setSwitch',
 	// 删除主菜
 	unsetmain : 'api/unsetMain',
 	// 群主获得大厨信息
@@ -177,34 +179,39 @@ var public = {
 			var dataId = $this.attr("data-id");
 			var code = $this.attr("code");
 			var codeName = $this.attr("codeName");
-			DATA.rt.data.forEach( function(item, index) {
-				if (item.merchant.code == code) {
-					item.items.forEach( function(element, index) {
-						if (element.date == date) {
-							public.setItemCookie(element.dish);
-							var reUrl = 'status=' + status
-								+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName;
-							if ((status == 3|| status==4) && public.checkUsertype() == 1) {
-								window.location.href = '/detailed.html?' + reUrl;
-								return false;
-							};
-							if (public.checkUsertype() == 1) {
-								window.location.href = '/masterLineup.html?' + reUrl;
+			public.getCalendar(function(DATA){
+				DATA.rt.data.forEach( function(item, index) {
+					if (item.merchant.code == code) {
+						item.items.forEach( function(element, index) {
+							if (element.date == date) {
+								public.setItemCookie(element.dish);
+								var reUrl = 'status=' + status
+									+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName;
+								if ((status == 3|| status==4) && public.checkUsertype() == 1) {
+									window.location.href = '/detailed.html?' + reUrl;
+									return false;
+								};
+								if (public.checkUsertype() == 1) {
+									window.location.href = '/masterLineup.html?' + reUrl;
+								}
+								else if (public.checkUsertype() == 2) {
+									window.location.href = '/oneLineup.html?' + reUrl;
+								} else {
+									window.location.href = '/twoLineup.html?' + reUrl;
+								}
 							}
-							else if (public.checkUsertype() == 2) {
-								window.location.href = '/oneLineup.html?' + reUrl;
-							} else {
-								window.location.href = '/twoLineup.html?' + reUrl;
-							}
-						}
-					});
-				}
-			});
+						});
+					}
+				});
+			})
 		});
 		// 排餐日历 伸缩窗口
 		function getWidth (){
 			var length = maxlength = $(".weeklist > p").length;
 			if (length >= 5) {
+					setTimeout(function(){
+						$('#week ul').find('.fa-hand-o-right').hide();
+					}, 10000);
 				var maxlength = 5;
 				$(".weeklist p").eq(4).find('i').remove();
 				$(".weeklist p").eq(4).append(' <i class="fa fa-hand-o-right" style="font-size:24px;"></i>');
@@ -222,47 +229,80 @@ var public = {
 		window.onresize = function (){
 			getWidth();
 		}
-		var removeP;
+		if (public.checkUsertype() == 1) {
+			var removeP;
 		var remove;
 		var removeEnd;
 		var reAdd = document.getElementsByClassName("reAdd");
 		for (var i = 0 ; i < reAdd.length ;i ++) {
-			reAdd[i].addEventListener("touchstart",function(event){
-				remove = $(this);
-				removeP = $(this).clone(true).css({
-					position: 'fixed',
-					opacity : 0.6
-				})
-				$(this).parent().append(removeP);
-				removeP.css({
-					left : event.touches[0].clientX + 10 + 'px',
-					top : event.touches[0].clientY + 10 + 'px',
-					border : '1px solid #ccc'
-				})
-				$("#week ul").css('overflow','hidden');
-			},false)
-			reAdd[i].addEventListener("touchmove",function (event){
-				removeP.css({
-					left : event.touches[0].clientX + 10 + 'px',
-					top : event.touches[0].clientY + 10 + 'px'
-				})
-			},false)
-			reAdd[i].addEventListener("touchend",function (event){
-					removeP.remove()
-					var x = event.changedTouches[0].clientX;
-					var y = event.changedTouches[0].clientY;
-					var width = $(".reAdd").outerWidth();
-					var height = $(".reAdd").outerHeight();
-					$(".reAdd").each(function (index,el){
-						var elx = $(el).offset().left;
-						var ely = $(el).offset().top;
-						if ( x > elx && x < elx + width && y>ely && y< ely + height) {
-							removeEnd = $(el);
-							return ;
-						};
-					});
-					console.log(removeEnd);
-			},false)
+				reAdd[i].addEventListener("touchstart",function(event){
+					remove = $(this);
+					removeP = $(this).clone(true).css({
+						position: 'fixed',
+						opacity : 0.6
+					})
+					$(this).parent().append(removeP);
+					removeP.css({
+						left : event.touches[0].clientX + 10 + 'px',
+						top : event.touches[0].clientY + 10 + 'px',
+						border : '1px solid #ccc',
+						display : 'none'
+					})
+					//$("#week ul").css('overflow','hidden');
+				},false)
+				reAdd[i].addEventListener("touchmove",function (event){
+					removeP.css({
+						left : event.touches[0].clientX + 10 + 'px',
+						top : event.touches[0].clientY + 10 + 'px',
+						display : 'block'
+					})
+					event.preventDefault();
+				},false)
+				reAdd[i].addEventListener("touchend",function (event){
+						removeP.remove()
+						var x = event.changedTouches[0].clientX;
+						var y = event.changedTouches[0].clientY;
+						var width = $(".reAdd").outerWidth();
+						var height = $(".reAdd").outerHeight();
+						$(".reAdd").each(function (index,el){
+							var elx = $(el).offset().left;
+							var ely = $(el).offset().top;
+							if ( x > elx && x < elx + width && y>ely && y< ely + height) {
+								removeEnd = $(el);
+							};
+						});
+						if (removeEnd.length > 0) {
+							var id = remove.attr('data-id');
+							var fr = {
+								date: remove.attr('date'),
+								mc : remove.attr('code')
+							}
+							var to = {
+								date: removeEnd.attr('date'),
+								mc : removeEnd.attr('code')
+							}
+							if (remove.attr('status')==0&&removeEnd.attr('status')==0) {
+								return;
+							}
+							if ( fr.mc!= to.mc||fr.date!=to.date) {
+								var url = '&id=' + id + '&from=' + JSON.stringify(fr) + '&to=' +JSON.stringify(to);
+								var message = window.confirm(fr.date+remove.attr('codename')+'的排餐数据到'+to.date+removeEnd.attr('codename')+'吗?');
+								if (message) {
+									public.setSwitch(url,function(){
+										var removeStatus = remove.attr('status');
+										var removeEndStatus = removeEnd.attr('status');
+										var removeInnerHTML = remove.html();
+										var removeEndInnerHTML = removeEnd.html();
+										remove.attr('status',removeEndStatus);
+										removeEnd.attr('status',removeStatus);
+										remove.html(removeEndInnerHTML);
+										removeEnd.html(removeInnerHTML);
+									});
+								}
+							}
+						}
+				},false)
+			}
 		}
 	},
 	sureCal: function (id){
@@ -1005,7 +1045,28 @@ var public = {
 				console.log(msg)
 			}
 		});
-	},	
+	},
+	// 数据交换
+	setSwitch : function (url,callback){
+		$.ajax({
+			url: this.url + this.setswitch + url,
+			type: 'GET',
+			dataType:'json',
+	       	xhrFields : {
+	       		withCredentials:true
+	       	},  
+			success: function (data){
+				if (!data.code == 200) {
+					
+				} else {
+					callback && callback(data)
+				}
+			},
+			error : function (msg){
+				console.log(msg)
+			}
+		});
+	},
 	'noCalGo' : function () {
 		var type = public.checkUsertype();
 		switch (type) {

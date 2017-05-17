@@ -94,7 +94,7 @@ li {
 	color: #000;
 }
 .input:disabled{
-	color: #ccc;
+	background-color: #EEE;
 }
 .input .input.enabled{
 	border-color: #000;
@@ -426,13 +426,13 @@ body{
 	border-left: 1px #000 dashed;
 }
 .cal .weeks li + li p{
-	background-color: #f0ad4e;
+	background-color: #EEE;
 	line-height: 1.6rem;
 	padding: 0.4rem 0px;
 }
 .cal .weeks li + li p[status='0']{
-	background-color: #d9534f;
-	color: #fff;
+	background-color: #CCC;
+	color: #999;
 }
 .cal .weeks li + li p[status='2']{
 	background-color: #5bc0de;

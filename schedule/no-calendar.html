@@ -40,17 +40,17 @@
 	<script type="text/javascript">
 		$(function () {
 			if(!public.isLogoin()){
-				window.location.href = '/index.html';
+				window.location.href = 'index.html';
 			}
 			public.getCalendar(returnUrl);
 			function returnUrl (){
 				var type = public.checkUsertype();
 				switch (type) {
 					case '2':
-						window.location.href = '/calendar.html';
+						window.location.href = 'calendar.html';
 						break;
 					case '3':
-						window.location.href = '/calendar.html';
+						window.location.href = 'calendar.html';
 						break;
 					default:
 						// statements_def

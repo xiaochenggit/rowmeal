@@ -75,7 +75,7 @@ var public = {
 	// 设置配菜
 	setside: 'api/setSide',
 	// 日历确认
-	scheduleconfirm :'r=api/scheduleConfirm&id=',
+	scheduleconfirm :'api/scheduleConfirm&id=',
 	setconfirm: 'api/setConfirm',
 	// 数据交换
 	setswitch :'api/setSwitch',
@@ -123,25 +123,25 @@ var public = {
 		Arraydata.forEach( function(item, index) {
 			bodyHTML += 		'<li class="clearfix">';
 			item.items.forEach( function(element, index) {
+				bodyHTML += '<p class="reAdd" status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
 				// 没有排餐 根据权限显示不同内容
 				if (!public.isEmptyObject(element.dish)) {
-						bodyHTML += 		'<p class="reAdd" status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
-						bodyHTML +=         	'<span>'+element.dish.biz.main.chef.name+'</span>';
-						bodyHTML +=         	'<span>'+element.dish.biz.main.name+'</span>'
-						bodyHTML += 		'</p>';
+						bodyHTML += '<span>'+element.dish.biz.main.chef.name+'</span>';
+						bodyHTML += '<span>'+element.dish.biz.main.name+'</span>';
 				} else {
-					if(public.checkUsertype() == 1) {
-						bodyHTML += 		'<p class="reAdd" status='+element.status+'  date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
-						bodyHTML +=         	'<span>'+'暂无'+'</span>';
-						bodyHTML +=         	'<span>'+'报名'+'</span>'
-						bodyHTML += 		'</p>';
+					if(element.status == 0) {
+						bodyHTML += '<span>当天</span>';
+						bodyHTML += '<span>不排餐</span>';
+					}
+					else if(public.checkUsertype() == 1) {
+						bodyHTML += '<span>'+'暂无'+'</span>';
+						bodyHTML += '<span>'+'报名'+'</span>';
 					} else {
-						bodyHTML += 		'<p class="reAdd " status='+element.status+' date='+element.date+' data-id='+data.id+' codeName='+item.merchant.name+' code='+item.merchant.code+'>';
-						bodyHTML +=         	'<span>'+'点击'+'</span>';
-						bodyHTML +=         	'<span>'+'报名'+'</span>'
-						bodyHTML += 		'</p>';
+						bodyHTML += '<span>'+'点击'+'</span>';
+						bodyHTML += '<span>'+'报名'+'</span>';
 					}
 				}
+				bodyHTML += '</p>';
 			});
 			bodyHTML += 		'</li>';
 		});
@@ -188,16 +188,16 @@ var public = {
 								var reUrl = 'status=' + status
 									+ '&date=' + date + '&dataId=' + dataId + '&code=' + code + '&codeName=' + codeName;
 								if ((status == 3|| status==4) && public.checkUsertype() == 1) {
-									window.location.href = '/detailed.html?' + reUrl;
+									window.location.href = 'detailed.html?' + reUrl;
 									return false;
 								};
 								if (public.checkUsertype() == 1) {
-									window.location.href = '/masterLineup.html?' + reUrl;
+									window.location.href = 'masterLineup.html?' + reUrl;
 								}
 								else if (public.checkUsertype() == 2) {
-									window.location.href = '/oneLineup.html?' + reUrl;
+									window.location.href = 'oneLineup.html?' + reUrl;
 								} else {
-									window.location.href = '/twoLineup.html?' + reUrl;
+									window.location.href = 'twoLineup.html?' + reUrl;
 								}
 							}
 						});
@@ -208,7 +208,7 @@ var public = {
 		// 排餐日历 伸缩窗口
 		function getWidth (){
 			var length = maxlength = $(".weeklist > p").length;
-			if (length >= 5) {
+			if (length > 5) {
 					setTimeout(function(){
 						$('#week ul').find('.fa-hand-o-right').hide();
 					}, 10000);
@@ -337,9 +337,11 @@ var public = {
 			$("#cherfName .name").val(item.biz.main.chef.name);
 			$("#mobile").val(item.biz.main.chef.mobile);
 			$("#BIZ_MAIN .name").val(item.biz.main.name);
+			$("#BIZ_MAIN").attr('data-id',item.biz.main.id);
 			$("#BIZ_MAIN .price").val(item.biz.main.cost/100 + '元');
-			$("#JOB_MAIN .name").val(item.biz.main.name);
-			$("#JOB_MAIN .price").val(item.biz.main.cost/100 + '元');
+			$("#JOB_MAIN").attr('data-id',item.job.main.id);
+			$("#JOB_MAIN .name").val(item.job.main.name);
+			$("#JOB_MAIN .price").val(item.job.main.cost/100 + '元');
 		}
 		if (this.checkUsertype() == 1) {
 			var user = this.getUserCookie();
@@ -367,19 +369,19 @@ var public = {
 			$("#deleteBtn").click(function(event) {
 				event.preventDefault()
 				public.checkUnsetmain(function(){
-					window.location.href='/calendar.html';
+					window.location.href='calendar.html';
 				});
 			});
 			// 返回
 			$("#reBtn").click(function(event) {
 				event.preventDefault();
-				window.location.href='/calendar.html';
+				window.location.href='calendar.html';
 			});
 			// 不排餐
 			var status = this.getUrlParam(url,'status');
-			if (status == 2) {
-				$("#oneBtn").remove();
-			};
+			// if (status == 2) {
+			// 	$("#oneBtn").remove();
+			// };
 			if (status==0) {
 				$("#noBtn").removeClass('noBtn').html('排餐');
 				$("#oneBtn").remove();
@@ -397,11 +399,11 @@ var public = {
 						public.unSetmain(url);
 					};
 					public.setDisable(url,function (){
-						window.location.href='/calendar.html';
+						window.location.href='calendar.html';
 					});
 				} else {
 					public.setEnable(url,function(){
-						window.location.href='/calendar.html';
+						window.location.href='calendar.html';
 					});
 				}
 			});
@@ -461,6 +463,8 @@ var public = {
 						$parent.siblings('.name').val($this.find('.foodName').text());
 						$parent.siblings('.price').val($this.find('.foodPrice').text());
 						$parent.hide();
+						$('#BIZ_MAIN ul').remove();
+						$('#JOB_MAIN ul').remove();
 						return false;
 					})
 				});
@@ -499,11 +503,13 @@ var public = {
 				};
 				$("#mobile").val(item.biz.main.chef.mobile);
 				$("#BIZ_MAIN .name").val(item.biz.main.name);
+				$("#BIZ_MAIN").attr('data-id',item.biz.main.id);
 				$("#BIZ_MAIN .price").val(item.biz.main.cost/100 + '元');
 			} 
 			if (item.job) {
 				$("#name").val(item.job.main.chef.name);
 				$("#mobile").val(item.job.main.chef.mobile);
+				$("#JOB_MAIN").attr('data-id',item.job.main.id);
 				$("#JOB_MAIN .name").val(item.job.main.name);
 				$("#JOB_MAIN .price").val(item.job.main.cost/100 + '元');
 			}
@@ -610,7 +616,7 @@ var public = {
 						$(".JOB_SIDE .name").attr('data-id',element.id);
 						$(".JOB_SIDE .price").val(element.cost + '元');
 					} else {
-						$("#JOB").append('<div class="food-list clearfix"><label><span>配菜</span><div class="input input-group BIZ_SIDE" data-id=""><input type="text" value='+element.name+' class="name"  data-id='+element.id+'><input type="text"  value='+element.cost+"元"+' class="price" ></div></label><i class="fa fa-minus"></i></div>')
+						$("#JOB").append('<div class="food-list clearfix"><label><span>配菜</span><div class="input input-group JOB_SIDE" data-id=""><input type="text" value='+element.name+' class="name"  data-id='+element.id+'><input type="text"  value='+element.cost+"元"+' class="price" ></div></label><i class="fa fa-minus"></i></div>')
 					}
 				});
 			}
@@ -729,30 +735,159 @@ var public = {
 			$('#sure').remove();
 		};
 		var item = public.getItemCookie();
-		$("#name").val(item.biz.main.chef.name);
+		// 文化餐/工作餐 分数、价格
+		$("#ba").val(item.biz.main.amount);
+		if (item.biz.main.price) {
+			$("#bp").val(item.biz.main.price/100);
+		};
+		if (item.job.main.price) {
+			$("#jp").val(item.job.main.price/100);
+		}
+		$("#ja").val(item.job.main.amount);
+		// 厨师
+		$("#cherfName .name").val(item.biz.main.chef.name);
 		$("#mobile").val(item.biz.main.chef.mobile);
-		$("#BIZ_MAIN").val(item.biz.main.name);
-		var BIZ_SIDE = '';
-		item.biz.side.forEach( function(item, index) {
-			BIZ_SIDE += '<div class="food-list clearfix">';
-			BIZ_SIDE +=    '<label>';
-			BIZ_SIDE +=       '<span>配菜</span>';
-			BIZ_SIDE +=       '<input type="text" class="input" value='+item.name+' disabled>';
-			BIZ_SIDE +=    '</label>';
-			BIZ_SIDE += '</div>';
+		// 主菜 
+		$("#BIZ_MAIN .name").val(item.biz.main.name);
+		$("#BIZ_MAIN").attr("data-id",item.biz.main.id);
+		$("#BIZ_MAIN .price").val(item.biz.main.cost/100 + '元');
+		$("#JOB_MAIN .name").val(item.job.main.name);
+		$("#JOB_MAIN").attr("data-id",item.job.main.id);
+		$("#JOB_MAIN .price").val(item.job.main.cost/100 + '元');
+		// 添加配菜
+
+		item.biz.side.forEach( function(element, index) {
+			if (index==0) {
+				$(".BIZ_SIDE .name").val(element.name);
+				$(".BIZ_SIDE .name").attr('data-id',element.id);
+				$(".BIZ_SIDE .price").val(element.cost + '元');
+			} else {
+				$("#BIZ").append('<div class="food-list clearfix"><label><span>配菜</span><div class="input input-group BIZ_SIDE" data-id=""><input type="text" value='+element.name+' class="name"  data-id='+element.id+'><input type="text"  value='+element.cost+"元"+' class="price" ></div></label><i class="fa fa-minus"></i></div>')
+			}
 		});
-		$("#BIZ").append(BIZ_SIDE);
-		var jOB_SIDE = '';
-		item.job.side.forEach( function(item, index) {
-			jOB_SIDE += '<div class="food-list clearfix">';
-			jOB_SIDE +=    '<label>';
-			jOB_SIDE +=       '<span>配菜</span>';
-			jOB_SIDE +=       '<input type="text" class="input" value='+item.name+' disabled>';
-			jOB_SIDE +=    '</label>';
-			jOB_SIDE += '</div>';
+		item.job.side.forEach( function(element, index) {
+			if (index==0) {
+				$(".JOB_SIDE .name").val(element.name);
+				$(".JOB_SIDE .name").attr('data-id',element.id);
+				$(".JOB_SIDE .price").val(element.cost + '元');
+			} else {
+				$("#JOB").append('<div class="food-list clearfix"><label><span>配菜</span><div class="input input-group JOB_SIDE" data-id=""><input type="text" value='+element.name+' class="name"  data-id='+element.id+'><input type="text"  value='+element.cost+"元"+' class="price" ></div></label><i class="fa fa-minus"></i></div>')
+			}
 		});
-		$("#JOB").append(jOB_SIDE);
-		$("#JOB_MAIN").val(item.job.main.name);
+		if (status == 3) {
+			$(".JOB_SIDE").bind('keyup',function(){
+		    	var $this = $(this);
+		    	var name = $this.find('.name').val();
+		    	$this.find("ul").remove();
+		    	public.getjob_side(name,function(data){
+					HTMLWork1(data,$this);
+				});
+		    })
+		    $(".BIZ_SIDE").bind('keyup',function(){
+		    	var $this = $(this);
+		    	var name = $this.find('.name').val();
+		    	$this.find("ul").remove();
+		    	public.getbiz_side(name,function(data){
+					HTMLCulture1(data,$this);
+				});
+		    })
+
+			$(document).on('click','.food-list',function(event){
+				var $parent = $(this).parent();
+				var target = $(event.target);
+				if (target.hasClass('fa-plus')) {
+					target.parent().parent().append('<div class="food-list clearfix">'+target.parent().html()+"</div>");
+					$(".JOB_SIDE").unbind('keyup');
+					$(".JOB_SIDE").bind('keyup',function(){
+				    	var $this = $(this);
+				    	var name = $this.find('.name').val();
+				    	$(".JOB_SIDE").find("ul").remove();
+				    	public.getjob_side(name,function(data){
+							HTMLWork1(data,$this);
+						});
+			    	})
+			    	$(".BIZ_SIDE").unbind('keyup');
+			    	$(".BIZ_SIDE").bind('keyup',function(){
+				    	var $this = $(this);
+				    	var name = $this.find('.name').val();
+				    	$(".BIZ_SIDE").find("ul").remove();
+				    	public.getbiz_side(name,function(data){
+							HTMLCulture1(data,$this);
+						});
+				    })
+			    	$("#JOB .fa-plus:gt(0)").removeClass('fa-plus').addClass('fa-minus');
+			    	$("#BIZ .fa-plus:gt(0)").removeClass('fa-plus').addClass('fa-minus');
+					return false;
+				} else if (target.hasClass('fa-minus')){
+					target.parent().remove();
+				} else {
+					return false;
+				}
+			})
+			$('#cherfName').on('keyup click',function (){
+				var name = $(this).find('.name').val();
+				$('#cherfName ul').remove();
+				public.chefList(name,HTMLcherf);
+			})
+			$('#BIZ_MAIN').on('keyup click',function (){
+				var name = $(this).find('.name').val();
+				$('#BIZ_MAIN ul').remove();
+				public.getbiz_main(name,HTMLCulture);
+			})
+			$('#JOB_MAIN').on('keyup click',function (){
+				var name = $(this).find('.name').val();
+				$('#JOB_MAIN ul').remove();
+				public.getjob_main(name,HTMLWork);
+			})
+		};
+	    function HTMLCulture1(data,thist){
+			var data = data.rt;
+			if (data.length > 0) {
+				thist.find('ul').remove();
+				var liHTML = '<ul class="foodlist">';
+				data.forEach( function(item, index) {
+					liHTML += '<li data-id='+item.id+'>';
+					liHTML += 	'<span class="foodName">'+item.name+'</span>';
+					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+					liHTML += '<li>';
+				});
+				liHTML += '</ul>';
+				thist.append(liHTML);
+				shua2();
+			};
+		}
+		function HTMLWork1(data,thist){
+			var data = data.rt;
+			if (data.length > 0) {
+				// var JOB_MAIN = $('#JOB_MAIN');
+				var liHTML = '<ul class="foodlist">';
+				data.forEach( function(item, index) {
+					liHTML += '<li data-id='+item.id+'>';
+					liHTML += 	'<span class="foodName">'+item.name+'</span>';
+					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+					liHTML += '<li>';
+				});
+				liHTML += '</ul>';
+				thist.append(liHTML);
+				shua2();
+			};
+		}
+		function shua2() {
+			$(".input-group .foodlist li").each(function(index, el) {
+				$(el).click(function(event){
+					$this = $(this);
+					$parent = $this.parent();
+					$parent.siblings('.name').attr('data-id',$this.attr('data-id'));
+					$parent.siblings('.name').val($this.find('.foodName').text());
+					$parent.siblings('.price').val($this.find('.foodPrice').text());
+					$parent.remove();
+					$(".BIZ_SIDE").find("ul").remove();
+					$(".JOB_SIDE").find("ul").remove();
+					return false;
+				})
+			});
+		}
+
 		$("#reBtn").click(function (event){
 			event.preventDefault();
 			window.history.go(-1);
@@ -761,12 +896,101 @@ var public = {
 			event.preventDefault();
 			public.checkUnsetmain();
 		});
+		$(".enabled").keyup(function (event) {
+			$(this).val($(this).val().replace(/[^\d.]/g,''));
+		})
+		function HTMLcherf(data){
+			var data = data.rt;
+			if (data.length > 0) {
+				var BIZ_MAIN = $('#cherfName');
+				var liHTML = '<ul class="foodlist">';
+				data.forEach( function(item, index) {
+					liHTML += '<li data-id='+item.mobile+'>';
+					liHTML += 	'<span class="foodName">'+item.name+'</span>';
+					liHTML += '<li>';
+				});
+				liHTML += '</ul>';
+				BIZ_MAIN.append(liHTML);
+				shua1();
+			};
+		}
+		function HTMLCulture(data){
+			var data = data.rt;
+			if (data.length > 0) {
+				var BIZ_MAIN = $('#BIZ_MAIN');
+				var liHTML = '<ul class="foodlist">';
+				data.forEach( function(item, index) {
+					liHTML += '<li data-id='+item.id+'>';
+					liHTML += 	'<span class="foodName">'+item.name+'</span>';
+					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+					liHTML += '<li>';
+				});
+				liHTML += '</ul>';
+				BIZ_MAIN.append(liHTML);
+				shua();
+			};
+		}
+		function HTMLWork(data){
+			var data = data.rt;
+			if (data.length > 0) {
+				var JOB_MAIN = $('#JOB_MAIN');
+				var liHTML = '<ul class="foodlist">';
+				data.forEach( function(item, index) {
+					liHTML += '<li data-id='+item.id+'>';
+					liHTML += 	'<span class="foodName">'+item.name+'</span>';
+					liHTML +=   '<span class="foodPrice">'+(item.cost/100)+'元'+'</span>';
+					liHTML += '<li>';
+				});
+				liHTML += '</ul>';
+				JOB_MAIN.append(liHTML);
+				shua();
+			};
+		}
+		function shua() {
+			$(".input-group .foodlist li").each(function(index, el) {
+				$(el).click(function(event){
+					$this = $(this);
+					$parent = $this.parent();
+					$parent.parent().attr('data-id',$this.attr('data-id'));
+					$parent.siblings('.name').val($this.find('.foodName').text());
+					$parent.siblings('.price').val($this.find('.foodPrice').text());
+					$parent.hide();
+					$('#BIZ_MAIN ul').remove();
+					$('#JOB_MAIN ul').remove();
+					return false;
+				})
+			});
+		}
+		function shua1() {
+			$(".input-group .foodlist li").each(function(index, el) {
+				$(el).click(function(event){
+					$this = $(this);
+					$parent = $this.parent();
+					$("#mobile").val($this.attr('data-id'));
+					$parent.siblings('.name').val($this.find('.foodName').text());
+					$parent.hide();
+					return false;
+				})
+			});
+		}
+		if (status == 4) {
+			$(".input-group input").attr("readonly",true).css({backgroundColor:'#EEE'});
+			$(".input-group").css({backgroundColor:'#EEE'});
+			$("i").remove();
+			$(".enabled").attr("readonly",true).css({backgroundColor:'#EEE'});
+		}
 		$("#sure").click(function (event){
 			event.preventDefault();
 			var url = window.location;
 			var id = public.getUrlParam(url,'dataId');
 			var mc = public.getUrlParam(url,'code');
 			var date = public.getUrlParam(url,'date');
+			// 主菜和厨师
+			var chef =  $("#mobile").val();
+			var BIZ_MAIN = $("#BIZ_MAIN");
+			var JOB_MAIN = $("#JOB_MAIN");
+
+			// 价格
 			var ba = Math.floor($("#ba").val());
 			var bp = parseFloat($("#bp").val()).toFixed(2);
 			var ja = Math.floor($("#ja").val());
@@ -775,11 +999,73 @@ var public = {
 				alert('份数价格要填完整');
 				return false;
 			}
-			var getUrl = '&id=' + id + '&mc=' + mc + '&date=' + date + '&ba=' + ba + 
-			'&bp=' + bp + '&ja=' + ja + '&jp=' + jp;
-			public.setConfirm(getUrl,function(data){
-				window.location.href='/calendar.html';
-			})
+
+			if (!BIZ_MAIN.find('.name').val() || !JOB_MAIN.find('.name').val()) {
+				alert('请把文化餐主菜或工作餐主菜填写完整');
+				return false;
+			} else {
+				var dish = {
+					type : 'biz',
+					id : BIZ_MAIN.attr('data-id'),
+					name : BIZ_MAIN.find('.name').val(),
+					cost :  parseInt(BIZ_MAIN.find('.price').val()) * 100
+				} 
+				dish = JSON.stringify(dish);
+				var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish + '&chef=' + chef;
+				public.setMain(url);
+				var dish = {
+					type : 'job',
+					id : JOB_MAIN.attr('data-id'),
+					name : JOB_MAIN.find('.name').val(),
+					cost :  parseInt(JOB_MAIN.find('.price').val()) * 100,
+				} 
+				dish = JSON.stringify(dish);
+				var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish + '&chef=' + chef;
+				public.setMain(url,function (){
+					// 配菜
+					var $biz = $(".BIZ_SIDE .name");
+					var $job = $(".JOB_SIDE .name");
+					var dish1 = [];
+					var isOk = true;
+					$biz.each(function(index, el) {
+						if (!$(this).val()) {
+							isOk = false
+						};
+						var obj = {
+							type : 'biz',
+							id : $(this).attr('data-id'),
+							name : $(this).val(),
+							cost : parseInt($(this).siblings('.price').val())
+						}
+						dish1.push(obj);
+					});
+					$job.each(function(index, el) {
+						if (!$(this).val()) {
+							isOk = false
+						};
+						var obj = {
+							type : 'job',
+							id : $(this).attr('data-id'),
+							name : $(this).val(),
+							cost : parseInt($(this).siblings('.price').val())
+						}
+						dish1.push(obj);
+					});
+					if (!isOk) {
+						alert('请把配菜信息填写完整');
+						return false;
+					};
+					var dish1 = JSON.stringify(dish1);
+					var url1 = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish1 ;
+					public.setSide(url1,function(data){
+						var getUrl = '&id=' + id + '&mc=' + mc + '&date=' + date + '&ba=' + ba + 
+				'&bp=' + bp + '&ja=' + ja + '&jp=' + jp;
+						public.setConfirm(getUrl,function(data){
+							window.location.href='calendar.html';
+						})
+					})
+				});
+			}
 		})
 	},
 	// 二厨验证 配菜
@@ -791,7 +1077,12 @@ var public = {
 		var $biz = $(".BIZ_SIDE .name");
 		var $job = $(".JOB_SIDE .name");
 		var dish = [];
+		var isOk = true;
 		$biz.each(function(index, el) {
+			if (!$(this).val()) {
+				isOk = false;
+				return false;
+			};
 			var obj = {
 				type : 'biz',
 				id : $(this).attr('data-id'),
@@ -801,6 +1092,10 @@ var public = {
 			dish.push(obj);
 		});
 		$job.each(function(index, el) {
+			if (!$(this).val()) {
+				isOk = false;
+				return false;
+			};
 			var obj = {
 				type : 'job',
 				id : $(this).attr('data-id'),
@@ -809,13 +1104,14 @@ var public = {
 			}
 			dish.push(obj);
 		});
-		if (dish.length <= 1) {
+		if (!isOk) {
 			alert('请把配菜信息填写完整');
-		}
+			return false;
+		};
 		var dish = JSON.stringify(dish);
 		var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish ;
 		this.setSide(url,function(data){
-			window.location.href='/calendar.html';
+			window.location.href='calendar.html';
 		})
 	},
 	// 验证菜单是否填齐全 
@@ -849,7 +1145,7 @@ var public = {
 				var dishr = JSON.stringify(dishr);
 				var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dishr + '&chef=' + chef;
 				public.setMain(url,function (){
-					window.location.href='/calendar.html';
+					window.location.href='calendar.html';
 				});
 			});
 		}
@@ -884,7 +1180,7 @@ var public = {
 			dish = JSON.stringify(dish);
 			var url = '&id=' + id + '&mc=' + mc + '&date=' + date + '&dish=' + dish + '&chef=' + chef;
 			public.setMain(url,function (){
-				window.location.href='/calendar.html';
+				window.location.href='calendar.html';
 			});
 		}
 	},
@@ -959,7 +1255,7 @@ var public = {
 		var date = this.getUrlParam(url,'date');
 		var url = '&id=' + id + '&mc=' + mc + '&date=' + date;
 		this.unSetmain(url,function(){
-			window.location.href='/calendar.html';
+			window.location.href='calendar.html';
 		});
 	},
 	// 删除主菜
@@ -1071,11 +1367,11 @@ var public = {
 		var type = public.checkUsertype();
 		switch (type) {
 			case '1':
-				window.location.href = '/set-calendar.html';
+				window.location.href = 'set-calendar.html';
 				break;
 			case '2':
 			case '3':
-				window.location.href = '/no-calendar.html';
+				window.location.href = 'no-calendar.html';
 				break;
 			default:
 				// statements_def
@@ -1086,11 +1382,11 @@ var public = {
 		var type = public.checkUsertype();
 		switch (type) {
 			case '1':
-				window.location.href = '/calendar.html';
+				window.location.href = 'calendar.html';
 				break;
 			case '2':
 			case '3':
-				window.location.href = '/calendar.html';
+				window.location.href = 'calendar.html';
 				break;
 			default:
 				// statements_def
@@ -1137,7 +1433,7 @@ var public = {
 	       			withCredentials:true
 	       		},
 	       		success : function (data){
-	       			 window.location.href = '/calendar.html';
+	       			 window.location.href = 'calendar.html';
 	       		},
 	       		error : function (msg){
 					console.log(msg)
@@ -1432,7 +1728,7 @@ var public = {
 	       success : function(result){ 
 	   		  if (result.code == 200) {
 				that.deleteUserCookie();
-				window.location.href = '/index.html';
+				window.location.href = 'index.html';
 	   		  }
 	       },  
 	       error : function(msg) {  
